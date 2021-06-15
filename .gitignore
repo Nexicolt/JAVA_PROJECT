@@ -1,0 +1,6 @@
+out/
+out/*
+logs.log
+Studia_Projekt_JAVA.iml
+.idea/
+.idea/*
