@@ -6,10 +6,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 
 //// TODO: 09.06.2021 opisz Ci jutro
 public class InputView_AddAssortmentFrame extends JDialog implements ActionListener {
-    private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
+    private JFiledDialogStyle toLocationJFlied, assortmentJFlied, totalJFlied;
     private JButtonDialogStyle saveButton, closeButton;
 
     private final InputView parrentInputPanel;
@@ -29,11 +30,12 @@ public class InputView_AddAssortmentFrame extends JDialog implements ActionListe
         JPanel dialogOptionsJPanel = new JPanel();
 
         Box verticalJPanelBox = Box.createVerticalBox();
+
         JLabelStyle fromLocationLabel = new JLabelStyle("Do lokalizacji");
         verticalJPanelBox.add(fromLocationLabel);
 
-        fromLocationJFlied = new JFiledDialogStyle();
-        verticalJPanelBox.add(fromLocationJFlied);
+        toLocationJFlied = new JFiledDialogStyle();
+        verticalJPanelBox.add(toLocationJFlied);
 
         JLabelStyle assortmentLabel = new JLabelStyle("Assortment");
         verticalJPanelBox.add(assortmentLabel);
@@ -72,6 +74,7 @@ public class InputView_AddAssortmentFrame extends JDialog implements ActionListe
         if(source.equals(closeButton)){
             parrentInputPanel.setVisible(true);
             this.dispose();
+            parrentInputPanel.setVisible(true);
         }
         //Dla przycisku zapisz -> wywołaj metodę dodania newgo asortyemnu, na obiekcie JPanelu rodzica
         else if(source.equals(saveButton)){
@@ -80,18 +83,16 @@ public class InputView_AddAssortmentFrame extends JDialog implements ActionListe
                 JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
                 return;
             }
-            parrentInputPanel.AddNewAssortment(assortmentJFlied.getText(),
-                    fromLocationJFlied.getText(), Float.parseFloat(totalJFlied.getText().replace(',', '.')));
+            parrentInputPanel.AddNewAssortment(assortmentJFlied.getText(),toLocationJFlied.getText()
+                    , Float.parseFloat(totalJFlied.getText().replace(',', '.')));
             this.dispose();
             parrentInputPanel.setVisible(true);
         }
     }
-
     /**
      * Funkcja sprawdza, czy któryś z inputów nie jest pusty
      */
     private boolean isAnyInputBlank(){
-        return fromLocationJFlied.getText().isBlank() && assortmentJFlied.getText().isBlank()
-                && totalJFlied.getText().isBlank();
+        return assortmentJFlied.getText().isBlank() && totalJFlied.getText().isBlank();
     }
 }

@@ -125,12 +125,14 @@ public class OutputView extends JPanel implements ActionListener {
                         "Wprowadzone dane nie zostaną zapisane. Czy na pewno chcesz wyjść?",
                         "Uwaga!",
                         JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.NO_OPTION) {
+                if (choice == JOptionPane.YES_OPTION) {
+                    setVisible(false);
+                    mainContainer.setVisible(true);
                     return;
                 }
+                setVisible(false);
+                mainContainer.setVisible(true);
             }
-            setVisible(false);
-            mainWindowWMS.setVisible(true);
         //Przycisk edycji asortymentu z listy
         } else if (source.equals(editButton)) {
             //Sprawdź, czy zaznaczono jakiś rekord na liście

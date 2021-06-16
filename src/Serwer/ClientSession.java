@@ -68,6 +68,16 @@ class ClientSession extends Thread {
                     //Zwróć do klienta informację, zwróconą przez funkcję
                     System.out.println("złapałem polecenie wydania");
                     outputStream.println(doOutput(jsonObject));
+                }else if (actionPerformed.equals("create_contractor")) {
+                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    outputStream.println(addNewContractor(jsonObject));
+                }
+                else if (actionPerformed.equals("input_operation")) {
+                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    outputStream.println(doInput(jsonObject));
+                }
+                else if(actionPerformed.equals("transfer_operation")){
+                    outputStream.println(doTransfer(jsonObject));
                 }
             }
             inputStream.close();
@@ -123,37 +133,75 @@ class ClientSession extends Thread {
         }
         return serwerResponseJson;
     }
-    //TODO:
-//    private JSONObject inputToWarehouseAssortment(JSONObject JSONMessage){
-//
-//        //Dane logowania z przesłanego JSON'a
-//        String login = JSONMessage.getJSONObject("data").getString("login");
-//        String password = JSONMessage.getJSONObject("data").getString("password");
-//
-//       // ArrayList <JSONArray> jsonListInput = JSONMessage.getJSONArray("data");
-//        //Utwórz JSON'a zwrotnego
-//        JSONObject serwerResponseJson = new JSONObject();
-//
-//        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
-//        try {
-//            //for(var zmienna : jsonListInput)
-////            {
-////
-////            }
-//            serwerResponseJson.put("status", "success");
-//            serwerResponseJson.put("message", "Poprawnie utworzono użytkownika");
-//        } catch (SQLException sqlException) {
-//            serwerResponseJson.put("status", "error");
-//
-//            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
-//            if(sqlException.getSQLState().equals("45000")){
-//                serwerResponseJson.put("message", sqlException.getMessage());
-//            }else{
-//                serwerResponseJson.put("message", "Nieoczekiwany błąd");
-//            }
-//        }
-//        return serwerResponseJson;
-//    }
+    private JSONObject doInput(JSONObject JSONDataFromClient) {
+
+        //Wyciągnij obiorcę i nadawcę z JSONA
+        String getfrom = JSONDataFromClient.getString("from_Contractor");
+
+        //Przygotuj listę asortymentów, do przekazania funkcji w SQLHelperze
+        ArrayList<AssortmentEntity> listOfAssortments = new ArrayList<>();
+
+        JSONArray assortmentsDataArray = JSONDataFromClient.getJSONArray("assortments_data");
+        for (Object tmpAssortment : assortmentsDataArray) {
+            JSONObject tmpAssortmentJSON = (JSONObject) tmpAssortment;
+
+            AssortmentEntity tmpAssortmentEntity = new AssortmentEntity(
+                    tmpAssortmentJSON.getString("assortment_Name"),
+                    tmpAssortmentJSON.getString("assortment_location"),
+                    tmpAssortmentJSON.getFloat("assortment_Count"));
+
+            listOfAssortments.add(tmpAssortmentEntity);
+        }
+
+        //Utwórz JSON'a zwrotnego
+        JSONObject serwerResponseJson = new JSONObject();
+
+        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        try {
+            String responseStockItemJSOnArray = SQLHelper.DoInput(getfrom, listOfAssortments);
+            serwerResponseJson.put("status", "success");
+            serwerResponseJson.put("message", "Poprawnie zakończono przyjęcie");
+        } catch (SQLException sqlException) {
+            serwerResponseJson.put("status", "error");
+
+            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            if (sqlException.getSQLState().equals("45000")) {
+                serwerResponseJson.put("message", sqlException.getMessage());
+            } else {
+                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+            }
+        }
+        return serwerResponseJson;
+    }
+
+    private JSONObject doTransfer(JSONObject JSONDataFromClient) {
+
+        //Wyciągnij obiorcę i nadawcę z JSONA
+        String fromLocation = JSONDataFromClient.getString("from_location");
+        String assortmentName = JSONDataFromClient.getString("Asortment");
+        String toLocation = JSONDataFromClient.getString("to_location");
+        float assortmentQuantity = JSONDataFromClient.getFloat("AssortmentQuantity");
+
+        //Utwórz JSON'a zwrotnego
+        JSONObject serwerResponseJson = new JSONObject();
+
+        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        try {
+            String responseStockItemJSOnArray = SQLHelper.DoTransfer(fromLocation, toLocation,assortmentName,assortmentQuantity);
+            serwerResponseJson.put("status", "success");
+            serwerResponseJson.put("message", "Poprawnie zakończono przyjęcie");
+        } catch (SQLException sqlException) {
+            serwerResponseJson.put("status", "error");
+
+            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            if (sqlException.getSQLState().equals("45000")) {
+                serwerResponseJson.put("message", sqlException.getMessage());
+            } else {
+                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+            }
+        }
+        return serwerResponseJson;
+    }
 
     /**
      * Funkcja wywułuje procedurę SQL-ową, która dodaje nową lokalizację z podanych danych
@@ -256,7 +304,31 @@ class ClientSession extends Thread {
     /**
      * Funckja parsuje dane z asortymentami, które przekaał jej klient i wywołuje procedurę SQL
      */
+    private JSONObject addNewContractor(JSONObject JSONMessage) {
 
+        //nazwa nowej lokalizacji
+        String contractorName = JSONMessage.getJSONObject("data").getString("contractor_name");
+
+        //Utwórz JSON'a zwrotnego
+        JSONObject serwerResponseJson = new JSONObject();
+
+        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
+        try {
+            SQLHelper.AddNewContractor(contractorName);
+            serwerResponseJson.put("status", "success");
+            serwerResponseJson.put("message", "Poprawnie utworzono kontrachenta");
+        } catch (SQLException sqlException) {
+            serwerResponseJson.put("status", "error");
+
+            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            if (sqlException.getSQLState().equals("45000")) {
+                serwerResponseJson.put("message", sqlException.getMessage());
+            } else {
+                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+            }
+        }
+        return serwerResponseJson;
+    }
     private JSONObject doOutput(JSONObject JSONDataFromClient) {
 
         //Wyciągnij obiorcę i nadawcę z JSONA

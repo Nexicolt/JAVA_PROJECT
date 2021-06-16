@@ -1,11 +1,14 @@
 package WMS.VIews;
 
 import Style.*;
+import WMS.MainWindowWMS;
+import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 
 /**
  * Klas obsluguje sekcje Transfery - pojawia sie po wyborze przycisku z menu glownego
@@ -15,13 +18,13 @@ public class TransferView extends JPanel implements ActionListener {
     //Uchwyty do inputów i przycisków
     JFliedTextStyle fromLocationJTextField, assortmentJTextField, tolocationJTextField, totalJTextField;
     JButtonOptionStyle saveButton, closeButton;
-    JFrame mainWindowWMS;
+    MainWindowWMS mainWindowWMS;
     JPanel mainContainer;
 
     /**
      * Konstruktor inicjalizuje referencje do głownego JPanel'u, okna WMS'a
      */
-    public TransferView(JFrame mainWindowWMS, JPanel mainContainer){
+    public TransferView(MainWindowWMS mainWindowWMS, JPanel mainContainer){
         this.mainWindowWMS = mainWindowWMS;
         this.mainContainer = mainContainer;
         init();
@@ -95,33 +98,30 @@ public class TransferView extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
 
-        if(source.equals(closeButton)) {
+        if(source == closeButton) {
             //Sprawdź buttony i wyświetl komunikat ostrzegawczy, jeśli któryś jest wypełniony
-            if(isAnyInputField()){
+            if (isAnyInputField()) {
                 int choice = JOptionPane.showConfirmDialog(null,
                         "Wprowadzone dane nie zostaną zapisane. Czy na pewno chcesz wyjść?",
-                        "UWaga!",
+                        "Uwaga!",
                         JOptionPane.YES_NO_OPTION);
-
-                if(choice == JOptionPane.NO_OPTION ){
-                   return;
+                if(choice == JOptionPane.YES_OPTION) {
+                    setVisible(false);
+                    mainContainer.setVisible(true);
+                    return;
                 }
             }
-
             setVisible(false);
-            mainWindowWMS.setVisible(true);
-
+            mainContainer.setVisible(true);
         }
         else if(source == saveButton){
             //Sprawdź inputy, czy któryś nie jest pusty
+            ///fromLocationJTextField, assortmentJTextField, tolocationJTextField, totalJTextField;
             if(isAnyInputBlank()){
                 JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
                 return;
             }
-
-            //TODO obsluzenie zapisu do bazay danych wporwadzonych wartosci (Filip / Kamil)
-            this.setVisible(false);
-            mainWindowWMS.setVisible(true);
+            doTransferCommand();
         }
     }
 
@@ -129,8 +129,8 @@ public class TransferView extends JPanel implements ActionListener {
      * Funkcja sprawdza, czy któryś z inputów nie jest pusty
      */
     private boolean isAnyInputBlank(){
-        return totalJTextField.getText().isBlank() && assortmentJTextField.getText().isBlank()
-                && fromLocationJTextField.getText().isBlank() && tolocationJTextField.getText().isBlank();
+        return fromLocationJTextField.getText().isBlank() || assortmentJTextField.getText().isBlank() ||
+                tolocationJTextField.getText().isBlank() || totalJTextField.getText().isBlank() ;
     }
 
     /**
@@ -139,5 +139,42 @@ public class TransferView extends JPanel implements ActionListener {
     private boolean isAnyInputField(){
         return !totalJTextField.getText().isBlank() || !assortmentJTextField.getText().isBlank()
                 || !fromLocationJTextField.getText().isBlank() || !tolocationJTextField.getText().isBlank();
+    }
+    private void doTransferCommand() {
+        //Główny JSOn, wysyłany do serwera
+        JSONObject transferCommandJSON = new JSONObject();
+        transferCommandJSON.put("action", "transfer_operation");
+
+        transferCommandJSON.put("from_location", fromLocationJTextField.getText().trim());
+        transferCommandJSON.put("to_location", tolocationJTextField.getText().trim());
+        transferCommandJSON.put("Asortment", assortmentJTextField.getText().trim());
+        transferCommandJSON.put("AssortmentQuantity", totalJTextField.getText().trim());
+
+        //Wyślij dane do serwera
+        mainWindowWMS.GetStreamToServer().println(transferCommandJSON);
+
+        //Czekaj na odpowiedź od serwera
+        try {
+            while (true) {
+                String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
+                if (serverResponse != null) {
+                    //Sparsuj odpowiedź do typu JSON
+                    JSONObject serverResponseJSON = new JSONObject(serverResponse);
+
+                    //Jeśli odesłał success, to wyświetl komunikat i zamknij okno
+                    if (serverResponseJSON.getString("status").equals("success")) {
+                        JoptionPaneMessages.showSuccessPopup("Transfer zakończony poprawnie");
+                        setVisible(false);
+                        mainContainer.setVisible(true);
+                    } else {
+                        //Jeśli nie odesłał success, to wyświetl zwrócony komunikat błędu
+                        String erroMessage = serverResponseJSON.getString("message");
+                        JoptionPaneMessages.showErrorPopup(erroMessage);
+                    }
+                    break;
+                }
+            }
+        } catch (IOException ignored) {
+        }
     }
 }

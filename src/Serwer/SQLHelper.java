@@ -42,18 +42,6 @@ public class SQLHelper {
         }
 
     }
-//
-//    /**
-//     * Zamyka otwarte z bazą danych połączenie.
-//     */
-//    public void CLoseConnection() {
-//        try {
-//            dbConnection.close();
-//        } catch (SQLException throwables) {
-//            ClientSession.logger.WriteLog("Błąd zamykania sesji bazy danych -> " + throwables.getMessage(), "ERROR");
-//        }
-//    }
-
     /**
      * Funkcja odpytuje baze danych i sprawdza ilośc rekordów w tabeli 'Users', dla podanego loginu i hasła
      */
@@ -125,25 +113,75 @@ public class SQLHelper {
         }
     }
 
-    //Pod wydania
-    public static void inputWarehouse(String locationName, String assortmentName, float total) throws SQLException {
+    public static String DoInput(String getFrom,  ArrayList<AssortmentEntity> listOfAssortments) throws SQLException {
 
+        Statement sqlStatement = null;
         //Sam się zamknie
-        try(Statement sqlStatement = dbConnection.createStatement()) {
+        try {
+            sqlStatement = dbConnection.createStatement();
+
+            //Rozpocznij procedurę, bo każdy element na liście asortymentó, to nowe wywołanie procedury SQL
+            //GDy coś się wysypie, to transakcja jest cofana
+            sqlStatement.executeQuery("START TRANSACTION ");
 
             //Procedura SQL zwraca wyjątek, przy błędzie
-            ResultSet queryResult = sqlStatement.executeQuery("CALL inputToWarehouse('"+locationName+"','"+assortmentName+"','"+total+"')");
+            for (var assortment: listOfAssortments) {
+                ResultSet queryResult = sqlStatement.executeQuery("CALL DoInput('"+getFrom+"', '"+assortment.getLocalization()+"', " +
+                        "'"+assortment.getName()+"','"+assortment.getCount()+"')");
+            }
+            //Zatwierdź transakcję, jeśli nie wyrzucił żadnwego wyjątku
+            sqlStatement.executeQuery("COMMIT");
+
+            return "success";
 
         } catch (SQLException sqlException) {
+
+            //Cofnij transakcję, jeśli procedura wyrzuciła wyjątek
+            sqlStatement.executeQuery("ROLLBACK");
 
             //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
             if(!sqlException.getSQLState().equals("45000")){
                 ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
+        }finally {
+            sqlStatement.close();
         }
     }
 
+    public static String DoTransfer(String fromLocation, String toLocation,String assortmentName, float quantity) throws SQLException {
+
+        Statement sqlStatement = null;
+        //Sam się zamknie
+        try {
+            sqlStatement = dbConnection.createStatement();
+
+            //Rozpocznij procedurę, bo każdy element na liście asortymentó, to nowe wywołanie procedury SQL
+            //GDy coś się wysypie, to transakcja jest cofana
+            sqlStatement.executeQuery("START TRANSACTION ");
+
+            //Procedura SQL zwraca wyjątek, przy błędzie
+                ResultSet queryResult = sqlStatement.executeQuery("CALL DoTransfer('"+fromLocation+"', '"+toLocation+"', " +
+                        "'"+assortmentName+"','"+quantity+"')");
+            //Zatwierdź transakcję, jeśli nie wyrzucił żadnwego wyjątku
+            sqlStatement.executeQuery("COMMIT");
+
+            return "success";
+
+        } catch (SQLException sqlException) {
+
+            //Cofnij transakcję, jeśli procedura wyrzuciła wyjątek
+            sqlStatement.executeQuery("ROLLBACK");
+
+            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            if(!sqlException.getSQLState().equals("45000")){
+                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+            }
+            throw sqlException;
+        }finally {
+            sqlStatement.close();
+        }
+    }
     /**
      * Funkcja wywołuje procuderę, dodającą nowy towar i zwraca ok, w przypadku powodzenia
      * W przypadku napotkania  błędu, zwraca jego komunikat
@@ -166,27 +204,24 @@ public class SQLHelper {
         }
     }
 
-    // przyjęcia // TODO: 14.06.2021
-//    public static void InputToWarehouse(String login, String password) throws SQLException {
-//
-//        //Sam się zamknie
-//        try(Statement sqlStatement = dbConnection.createStatement()) {
-//
-//            //Hashuje hasło (bezpieczeństwo)
-//            password = generateMD5(password);
-//
-//            //Procedura SQL zwraca wyjątek, przy błędzie
-//            ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewUser('"+login+"', '"+password+"')");
-//
-//        } catch (SQLException sqlException) {
-//
-//            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
-//            if(!sqlException.getSQLState().equals("45000")){
-//                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
-//            }
-//            throw sqlException;
-//        }
-//    }
+    public static void AddNewContractor(String contractorName) throws SQLException {
+
+        //Sam się zamknie
+        try(Statement sqlStatement = dbConnection.createStatement()) {
+
+            //Procedura SQL zwraca wyjątek, przy błędzie
+            ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewContractor('"+contractorName+"')");
+
+        } catch (SQLException sqlException) {
+
+            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            if(!sqlException.getSQLState().equals("45000")){
+                ClientSession.logger.WriteLog("Błąd podczas tworzenia kontrachenta -> " + sqlException.getMessage(), "ERROR");
+            }
+            throw sqlException;
+        }
+    }
+
     /**
      * Funkcja wyciąga z bazy wszystkie stany magazynowe z odpowiednimi filtrami
      * W przypadku napotkania  błędu, zwraca jego komunikat

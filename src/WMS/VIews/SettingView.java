@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 //TODO Do poprawy wyswietlanie przyciskow (FILIP)
 public class SettingView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
-    private JButtonMainStyle addUserButton, addLoactionButton, addAssortmentButton, backButton;
+    private JButtonMainStyle addUserButton, addLoactionButton,addContractorButton, addAssortmentButton, backButton;
     JPanel mainContainer;
 
     /**
@@ -29,7 +29,6 @@ public class SettingView extends JPanel implements ActionListener {
     }
 
     public void init() {
-        setSize(new Dimension(500, 200));
         //box glowny do pozycjnonwania w pionie
         Box verticalMainBox = Box.createVerticalBox();
 
@@ -47,6 +46,11 @@ public class SettingView extends JPanel implements ActionListener {
         addAssortmentButton = new JButtonMainStyle("Dodaj asortyment");
         addAssortmentButton.addActionListener(this);
         verticalMainBox.add(addAssortmentButton);
+
+        verticalMainBox.add(Box.createVerticalStrut(20));
+        addContractorButton = new JButtonMainStyle("Dodaj kontrachenta");
+        addContractorButton.addActionListener(this);
+        verticalMainBox.add(addContractorButton);
 
         verticalMainBox.add(Box.createVerticalStrut(60));
         backButton = new JButtonMainStyle("<- Wstecz");
@@ -70,6 +74,8 @@ public class SettingView extends JPanel implements ActionListener {
             addNewLocationCommand();
         }else if(source == addAssortmentButton){
             addNewAssortment();
+        }else if(source.equals(addContractorButton)){
+            addNewContractor();
         }
     }
 
@@ -131,7 +137,6 @@ public class SettingView extends JPanel implements ActionListener {
                             String erroMessage = serverResponseJSON.getString("message");
                             JoptionPaneMessages.showErrorPopup(erroMessage);
                         }
-
                         break;
                     }
                 }
@@ -219,6 +224,48 @@ public class SettingView extends JPanel implements ActionListener {
                         //Jeśli odesłał OK, to lokalizacja dodana poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
                             JoptionPaneMessages.showSuccessPopup("Poprawnie dodano asortyment");
+                        }else{
+                            //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                            String erroMessage = serverResponseJSON.getString("message");
+                            JoptionPaneMessages.showErrorPopup(erroMessage);
+                        }
+                        break;
+                    }
+                }
+            } catch (IOException ignored) { }
+        }
+    }
+    private void addNewContractor(){
+
+        String contractorName=JOptionPane.showInputDialog(null,"Wprowadź nazwę kontrachenta");
+
+
+        //Wyślij dane do serwera, jeśliwporwadzona nazwa nie jest pusta
+        if (contractorName != null && !contractorName.isBlank()) {
+
+            //Utwórz JSON'a, do wysyłki
+            JSONObject createContractorJSON = new JSONObject();
+
+            JSONObject jsonData = new JSONObject();
+            jsonData.put("contractor_name", contractorName.trim());
+
+            createContractorJSON.put("action", "create_contractor");
+            createContractorJSON.put("data", jsonData);
+
+            //Wysyłka JSON'a do serwera, z danymi nowej lokalizacji
+            mainWindowWMS.GetStreamToServer().println(createContractorJSON);
+
+            //Czekaj na odpowiedź od serwera
+            try {
+                while (true) {
+                    String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
+                    if (serverResponse != null) {
+                        //Sparsuj odpowiedź do typu JSON
+                        JSONObject serverResponseJSON = new JSONObject(serverResponse);
+
+                        //Jeśli odesłał OK, to lokalizacja dodana poprawnie
+                        if(serverResponseJSON.getString("status").equals("success")){
+                            JoptionPaneMessages.showSuccessPopup("Poprawnie dodano kontrachenta");
                         }else{
                             //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
                             String erroMessage = serverResponseJSON.getString("message");

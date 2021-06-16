@@ -30,7 +30,8 @@ public class WMS{
             System.exit(0);
         }
 
-        //new LoginForm("Logowanie", communicationSocket, streamToServer, streamFromServer).init();
-        new MainWindowWMS("Okno głowne", communicationSocket, streamToServer, streamFromServer).init();
+        new LoginForm("Logowanie", communicationSocket, streamToServer, streamFromServer).init();
+        //new MainWindowWMS("Okno głowne", communicationSocket, streamToServer, streamFromServer).init();
+
     }
 }

@@ -119,12 +119,14 @@ public class InputView extends JPanel implements ActionListener {
                         "Wprowadzone dane nie zostaną zapisane. Czy na pewno chcesz wyjść?",
                         "Uwaga!",
                         JOptionPane.YES_NO_OPTION);
-                if (choice == JOptionPane.NO_OPTION) {
+                if(choice == JOptionPane.YES_OPTION) {
+                    setVisible(false);
+                    mainContainer.setVisible(true);
                     return;
                 }
             }
             setVisible(false);
-            mainWindowWMS.setVisible(true);
+            mainContainer.setVisible(true);
             //Przycisk edycji asortymentu z listy
         } else if (source.equals(editButton)) {
             //Sprawdź, czy zaznaczono jakiś rekord na liście
@@ -150,9 +152,17 @@ public class InputView extends JPanel implements ActionListener {
 
         } else if (source.equals(saveButton)) {
 
-            /*this.setVisible(false);
-            mainWindowWMS.setVisible(true);*/
-
+           if(fromFiled.getText().isBlank()){
+                JoptionPaneMessages.showErrorPopup("Pole dostawcy musi być uzupełnione");
+                return;
+            }
+            //Sprawdź, czy lista ma chociaż jeden towar
+            if(listOfAssortments.size() == 0){
+                JoptionPaneMessages.showErrorPopup("Wskaż conajmniej jeden asortyment do przyjęcia");
+                return;
+            }
+            //Wywołaj komendę, wysyłającą request sdo serwera
+            inputWarehouse();
             //Przycisk dodania nowego asortymentu
         } else if (source.equals(addButton)) {
             setVisible(false);
@@ -167,8 +177,8 @@ public class InputView extends JPanel implements ActionListener {
      * Publiczna funkcja, wywoływana z okna dialogowego z wprowadzaniem nowego towaru
      * Dodaje nowy towar do JList i odświeża ją
      */
-    public void AddNewAssortment(String assortmentName, String fromLokalization, float count) {
-        listOfAssortments.add(new AssortmentEntity(assortmentName, fromLokalization, count));
+    public void AddNewAssortment(String assortmentName,String toLokalization, float count) {
+        listOfAssortments.add(new AssortmentEntity(assortmentName, toLokalization,count));
         outputList.setListData(listOfAssortments.toArray());
     }
 
@@ -188,7 +198,7 @@ public class InputView extends JPanel implements ActionListener {
         return !fromFiled.getText().isBlank() || outputList.getModel().getSize() == 0;
     }
 
-    private void InputToWarehouse() {
+    private void inputWarehouse() {
 
         JSONObject inputToWarehouseJSON = new JSONObject();
         JSONArray inputToWarehouseDataJSON = new JSONArray();
@@ -199,10 +209,12 @@ public class InputView extends JPanel implements ActionListener {
         for (var assortentList : listOfAssortments) {
             JSONObject tmpToWarehouseDataJSON = new JSONObject();
             tmpToWarehouseDataJSON.put("assortment_Name", assortentList.getName());
+            tmpToWarehouseDataJSON.put("assortment_location",assortentList.getLocalization());
             tmpToWarehouseDataJSON.put("assortment_Count", assortentList.getCount());
+
             inputToWarehouseDataJSON.put(tmpToWarehouseDataJSON);
         }
-        inputToWarehouseJSON.put("data", inputToWarehouseDataJSON);
+        inputToWarehouseJSON.put("assortments_data", inputToWarehouseDataJSON);
         mainWindowWMS.GetStreamToServer().println(inputToWarehouseJSON);
 
         //Czekaj na odpowiedź od serwera
@@ -218,6 +230,8 @@ public class InputView extends JPanel implements ActionListener {
                     //Jeśli odesłał OK, to użytkownik utworzony poprawnie
                     if (serverResponseJSON.getString("status").equals("success")) {
                         JoptionPaneMessages.showSuccessPopup("Towar przyjęty !!");
+                        setVisible(false);
+                        mainContainer.setVisible(true);
                     } else {
                         //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
                         String erroMessage = serverResponseJSON.getString("message");

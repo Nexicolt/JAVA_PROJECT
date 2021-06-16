@@ -19,11 +19,13 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
     private JButtonMainStyle stockLevelsButton, outPutDocumentButton, inputDocumentButton, transferButton, settingButton;
     private JButton logoutButton;
     private JPanel mainWindowPanel;
+    String userName;
     JPanel transferPanel;
 
     //Konstruktor MainWindowWMS - FI
-    public MainWindowWMS(String windowName, Socket _commSocket, PrintWriter _streamToServer, BufferedReader _streamFromServer){
+    public MainWindowWMS(String windowName, Socket _commSocket, PrintWriter _streamToServer, BufferedReader _streamFromServer, String userName){
         super(windowName, _commSocket, _streamToServer, _streamFromServer);
+        this.userName = userName;
     }
 
     //Funkcja wywolania widoku menu głównego aplikacji
@@ -36,7 +38,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
         //Panel Górny zawierajacy nazwe zalogowanego uzytkownika oraz przycisk wyloguj
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
-        JLabel zalogowanyUzytkownika = new JLabel("Zalogowano:");
+        JLabel zalogowanyUzytkownika = new JLabel("Zalogowano: "+userName);
         northPanel.add(zalogowanyUzytkownika);
 
         logoutButton = new JButton("Wyloguj");
@@ -89,22 +91,26 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
             mainWindowPanel.setVisible(false);
             StockItemView stockItemView = new StockItemView(this, mainWindowPanel);
             add(stockItemView);
+            pack();
         }
         else if(source.equals(transferButton)){
             mainWindowPanel.setVisible(false);
             transferPanel = new TransferView(this, mainWindowPanel);
             add(transferPanel);
+            pack();
         }
         else if(source.equals(inputDocumentButton)){
             mainWindowPanel.setVisible(false);
             InputView inputView = new InputView(this, mainWindowPanel);
             add(inputView);
+            pack();
         }
         else if(source.equals(outPutDocumentButton)){
             //TODO Dodanie nowego Jpanelu wydania - wersja testowa
             mainWindowPanel.setVisible(false);
             OutputView outputJPanel = new OutputView(this, mainWindowPanel);
             add(outputJPanel);
+            pack();
         }
         else if(source.equals(settingButton)){
             //TODO
@@ -114,11 +120,10 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
         }
         else if(source.equals(logoutButton)){
             dispose();
-            //new LoginForm("Logowanie").init();
+            new LoginForm("Logowanie", communicationSocket, streamToServer, streamFromServer).init();
         }
 
         //Pakowanie zawartości frame i środkowanie na ekranie
-        pack();
         setLocationRelativeTo(null);
     }
 
