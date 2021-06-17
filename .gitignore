@@ -1,4 +1,6 @@
 out/
 out/*
+output_WZ/
+output_WZ/*
 logs.log
 

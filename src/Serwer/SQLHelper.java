@@ -305,9 +305,8 @@ public class SQLHelper {
         try(FileInputStream propertiesFile = new FileInputStream("SQLConfig.properties")){
 
             //Utwórz klasę pomocniczą, która sparsuje dane z pliku
-            Properties properties = new Properties();
+            DBConfigParser properties = new DBConfigParser();
             properties.load(propertiesFile);
-
 
             DBHOST = properties.getProperty("host");
             DBUSER = properties.getProperty("username");

@@ -1,5 +1,5 @@
-create database wms_java;
-create  table assortment
+create or replace database wms_java;
+create or replace table assortment
 (
     assortmentID int auto_increment
         primary key,
@@ -8,7 +8,7 @@ create  table assortment
         unique (name)
 );
 
-create  table contracotrs
+create or replace  table contracotrs
 (
     contractorID int auto_increment
         primary key,
@@ -17,7 +17,7 @@ create  table contracotrs
         unique (name)
 );
 
-create table location
+create or replace table location
 (
     locationID int auto_increment
         primary key,
@@ -26,7 +26,7 @@ create table location
         unique (name)
 );
 
-create table stockitem
+create or replace table stockitem
 (
     stockItemID int auto_increment
         primary key,
@@ -39,7 +39,7 @@ create table stockitem
         foreign key (locationID) references location (locationID)
 );
 
-create table users
+create or replace table users
 (
     userID int auto_increment
         primary key,
@@ -48,7 +48,7 @@ create table users
     constraint Login
         unique (login)
 );
-create  procedure AddNewContractor(IN _contractorName varchar(50))
+create or replace  procedure AddNewContractor(IN _contractorName varchar(50))
 BEGIN
     #     Sprawdź, czy taki użytownik już nie istnieje
     SET @ContractorExists = (SELECT COUNT(name) FROM assortment WHERE name=_contractorName);
@@ -58,7 +58,7 @@ BEGIN
     INSERT INTO contracotrs SET name=_contractorName;
 end;
 
-create  procedure AddNewAssortment(IN _assortmentName varchar(50))
+create or replace  procedure AddNewAssortment(IN _assortmentName varchar(50))
 BEGIN
     #     Sprawdź, czy taki użytownik już nie istnieje
     SET @assortmentExists = (SELECT COUNT(name) FROM assortment WHERE name=_assortmentName);
@@ -68,7 +68,7 @@ BEGIN
     INSERT INTO assortment SET name=_assortmentName;
 end;
 
-create  procedure AddNewLocation(IN _locationName varchar(50))
+create or replace  procedure AddNewLocation(IN _locationName varchar(50))
 BEGIN
     #     Sprawdź, czy taki użytownik już nie istnieje
     SET @locationExists = (SELECT COUNT(name) FROM location WHERE name=_locationName);
@@ -78,7 +78,7 @@ BEGIN
     INSERT INTO location SET name=_locationName;
 end;
 
-create procedure AddNewUser(IN _login varchar(100), IN _password varchar(100))
+create or replace procedure AddNewUser(IN _login varchar(100), IN _password varchar(100))
 BEGIN
     #     Sprawdź, czy taki użytownik już nie istnieje
     SET @userExsists = (SELECT COUNT(login) FROM users WHERE login=_login);
@@ -88,7 +88,7 @@ BEGIN
     INSERT INTO users SET login = _login, password = _password;
 end;
 
-create procedure DoOutput(IN _sendTo varchar(50), IN _sendFrom varchar(50), IN _assortmentName varchar(100), IN _locationName varchar(100), IN _assortmentCount float)
+create or replace procedure DoOutput(IN _sendTo varchar(50), IN _sendFrom varchar(50), IN _assortmentName varchar(100), IN _locationName varchar(100), IN _assortmentCount float)
 BEGIN
 
     SET @assortmentID = (SELECT assortmentID FROm assortment WHERE name=_assortmentName);
@@ -132,7 +132,7 @@ BEGIN
 
 end;
 
-create procedure DoTransfer(IN _fromLocation varchar(50),IN _toLocation varchar(50), IN _assortmentName varchar(100),  IN _assortmentCount float)
+create or replace procedure DoTransfer(IN _fromLocation varchar(50),IN _toLocation varchar(50), IN _assortmentName varchar(100),  IN _assortmentCount float)
 BEGIN
 
     SET @assortmentID = (SELECT assortmentID FROm assortment WHERE name=_assortmentName);
@@ -177,7 +177,7 @@ BEGIN
     DELETE FROM stockitem WHERE stockLevel =0;
 end;
 
-create procedure DoInput(IN _getFrom varchar(50), IN _locationName varchar(100),
+create or replace procedure DoInput(IN _getFrom varchar(50), IN _locationName varchar(100),
                          IN _assortmentName varchar(100), IN _assortmentCount float)
 BEGIN
 
@@ -207,7 +207,7 @@ BEGIN
     end if;
 end;
 
-create  procedure GetStockItem(IN _assortmentName varchar(50), IN _locationName varchar(50))
+create or replace  procedure GetStockItem(IN _assortmentName varchar(50), IN _locationName varchar(50))
 BEGIN
 
     set _assortmentName = if(_assortmentName = '', NULL, _assortmentName);
@@ -274,7 +274,7 @@ BEGIN
     end if;
 end;
 
-create  function VerifyLoginData(_login varchar(50), _password varchar(255)) returns tinyint(1)
+create or replace  function VerifyLoginData(_login varchar(50), _password varchar(255)) returns tinyint(1)
 BEGIN
     SET @findedROws = (SELECT COUNT(login) FROm users WHERE login = _login AND password = _password );
     RETURN @findedROws;

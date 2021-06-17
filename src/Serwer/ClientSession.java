@@ -4,13 +4,12 @@ import WMS.Entity.AssortmentEntity;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 class ClientSession extends Thread {
     private final Socket clientCommunicatorSocket;
@@ -68,15 +67,13 @@ class ClientSession extends Thread {
                     //Zwróć do klienta informację, zwróconą przez funkcję
                     System.out.println("złapałem polecenie wydania");
                     outputStream.println(doOutput(jsonObject));
-                }else if (actionPerformed.equals("create_contractor")) {
+                } else if (actionPerformed.equals("create_contractor")) {
                     //Zwróć do klienta informację, zwróconą przez funkcję
                     outputStream.println(addNewContractor(jsonObject));
-                }
-                else if (actionPerformed.equals("input_operation")) {
+                } else if (actionPerformed.equals("input_operation")) {
                     //Zwróć do klienta informację, zwróconą przez funkcję
                     outputStream.println(doInput(jsonObject));
-                }
-                else if(actionPerformed.equals("transfer_operation")){
+                } else if (actionPerformed.equals("transfer_operation")) {
                     outputStream.println(doTransfer(jsonObject));
                 }
             }
@@ -133,6 +130,7 @@ class ClientSession extends Thread {
         }
         return serwerResponseJson;
     }
+
     private JSONObject doInput(JSONObject JSONDataFromClient) {
 
         //Wyciągnij obiorcę i nadawcę z JSONA
@@ -187,7 +185,7 @@ class ClientSession extends Thread {
 
         //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
         try {
-            String responseStockItemJSOnArray = SQLHelper.DoTransfer(fromLocation, toLocation,assortmentName,assortmentQuantity);
+            String responseStockItemJSOnArray = SQLHelper.DoTransfer(fromLocation, toLocation, assortmentName, assortmentQuantity);
             serwerResponseJson.put("status", "success");
             serwerResponseJson.put("message", "Poprawnie zakończono przyjęcie");
         } catch (SQLException sqlException) {
@@ -329,6 +327,10 @@ class ClientSession extends Thread {
         }
         return serwerResponseJson;
     }
+
+    /**
+     * Funckja wyciąga dane z JSON'a i wywołuję procedure z SQL Helpera
+     */
     private JSONObject doOutput(JSONObject JSONDataFromClient) {
 
         //Wyciągnij obiorcę i nadawcę z JSONA
@@ -353,11 +355,13 @@ class ClientSession extends Thread {
         //Utwórz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywołanie funkcji wykonującej wydanie (zwraca wyjątek, przy napotkaniu błędu)
         try {
-            String responseStockItemJSOnArray = SQLHelper.DoOutput(sendFrom, sendTo, listOfAssortments);
+            SQLHelper.DoOutput(sendFrom, sendTo, listOfAssortments);
             serwerResponseJson.put("status", "success");
             serwerResponseJson.put("message", "Poprawnie zakończono wydanie");
+
+            createWZOutputFile(JSONDataFromClient);
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
@@ -371,4 +375,59 @@ class ClientSession extends Thread {
         return serwerResponseJson;
     }
 
+    /**
+     * Funkcja wywoływana przy poprawnym zakończeniu wydania.
+     * Tworzy dokument WZ, dla ERP'a
+     */
+    private void createWZOutputFile(JSONObject jsonString) {
+
+        //Formatowanie daty, żeby doklejać ja do pliku
+        SimpleDateFormat dateFormater = new SimpleDateFormat("dd_MM_yyyy__HH_mm_ss");
+        String WZFileName = dateFormater.format(new Date());
+
+        //Edycja JSON'a, do pliku wyjściowego
+        jsonString.remove("action");
+        jsonString.put("document_type", "WZ");
+        jsonString.put("document_numer", WZFileName);
+        jsonString.put("ship_from", jsonString.getJSONObject("data").getString("from"));
+        jsonString.put("ship_to", jsonString.getJSONObject("data").getString("to"));
+
+        jsonString.getJSONObject("data").remove("to");
+        jsonString.getJSONObject("data").remove("from");
+
+        //Scieżka do pliku
+        String path = "output_WZ/WZ_" + WZFileName + ".json";
+        createFileIfNotExists(path);
+
+        try (BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(path)))) {
+
+            bufferedWriter.write(jsonString.toString(4));
+
+        } catch(FileNotFoundException notFoundException) {
+            System.out.println("Brak pliku o podanej nazwie");
+        } catch (IOException ioException) {
+            System.out.println("Błąd czytania z pliku");
+        } catch (Exception exception) {
+            System.out.println("Nieobsłużony błąd");
+        }
+    }
+
+    /**
+     * Create file if not exist.
+     */
+    public static void createFileIfNotExists(String path) {
+        try {
+            File file = new File(path);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            } else {
+                FileOutputStream writer = new FileOutputStream(path);
+                writer.write(("").getBytes());
+                writer.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
