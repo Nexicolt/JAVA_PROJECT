@@ -19,6 +19,9 @@ public abstract class AbstractJFrame extends JFrame implements WindowListener {
     protected PrintWriter streamToServer;
     protected BufferedReader streamFromServer;
 
+    /**
+     * Konstruktor inizjalizuje tytuł okna i przechwytuje refrencję do socketu komunikacji i strumieni
+     */
     AbstractJFrame(String windowName, Socket _commSocket, PrintWriter _streamToServer, BufferedReader _streamFromServer) {
         super(windowName);
         communicationSocket = _commSocket;

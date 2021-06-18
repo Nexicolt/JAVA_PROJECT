@@ -10,7 +10,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//// TODO: 09.06.2021 opisz Ci jutro
+/**
+ * Klasa reprezentuje okno, które wyskakuje po wciśnieciu przycisku edytowania  asrotymentu, na tworzonym przyjęciu
+ */
 public class InputView_EditAssortmentFrame extends JDialog implements ActionListener {
     private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
     private JButtonDialogStyle saveButton, closeButton;
@@ -33,6 +35,9 @@ public class InputView_EditAssortmentFrame extends JDialog implements ActionList
 
 
     }
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init(){
         setSize(400,400);
         setResizable(false);

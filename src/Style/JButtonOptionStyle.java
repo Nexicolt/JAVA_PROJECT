@@ -3,8 +3,10 @@ package Style;
 import javax.swing.*;
 import java.awt.*;
 
-//Klasa zawiera zdefiniowany wyglad przyciskow funkcyjnych np zapisz/ rezygnuj
-//mozna ja wykorzystac w dowolny oknie
+/**
+ * Klasa reprezentująca styl przycisków funkcyjnych (zapisz/Anuluj). Wszystkie tego typu kontorlki sa jednakowe w aplikacji, więc zosaatła utworozna klasa,
+ * która tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w dużym stopniu)
+ */
 public class JButtonOptionStyle extends JButton {
     public JButtonOptionStyle(String name){
         super(name);

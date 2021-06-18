@@ -7,7 +7,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//// TODO: 09.06.2021 opisz Ci jutro
+/**
+ * Klasa reprezentuje okno, które wyskakuje po wciśnieciu przycisku dodawania nowego asrotymentu, na tworzonym wydaniu
+ */
 public class OutputView_AddAssortmentFrame extends JDialog implements ActionListener {
     private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
     private JButtonDialogStyle saveButton, closeButton;
@@ -21,6 +23,10 @@ public class OutputView_AddAssortmentFrame extends JDialog implements ActionList
         parrentOutputPanel = outputPanelHandler;
         init();
     }
+
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init(){
         setSize(400,400);
         setResizable(false);

@@ -16,7 +16,10 @@ import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-
+/**
+ * Klasa agregująca wszystkie działania związane z bazą danych Specjalnie wyekstrahowana do osobnego pliku, by
+ * oddzielić działania na JSON'ie od wywołań zapytań/procedur SQL
+ */
 public class SQLHelper {
 
     static Connection dbConnection = null;
@@ -24,7 +27,10 @@ public class SQLHelper {
     ///Dane konfigracyjne do połączenia z MYSQL
     static String DBHOST, DBUSER, DBPASSWORD, DBPORT, DATABASENAME;
 
-
+    /**
+     * Funkcja inicjalizuje połączenie z baza danych i kończy działanie serwera, jesli to sie nie powiedzie
+     * (konieczne działanie, bo zmienna 'Connection" jest statyczna i inicjalizowana tylko raz)
+     */
     public static void InitSqlConnection(){
         //Odczytuje parametry połączeniu z pliku i kończy pogram, jeśli napotka błąd (brak konieczności try-catch)
         ReadConfiguration();
@@ -43,9 +49,9 @@ public class SQLHelper {
 
     }
     /**
-     * Funkcja odpytuje baze danych i sprawdza ilośc rekordów w tabeli 'Users', dla podanego loginu i hasła
+     * Funkcja wywołuje procuderę, verfyikującą dane logowania użytkownika. W przypadku poprawnego przebiegu, czyli poprawnych danych zwrraca 'success'
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
      */
-    //TODO przerobic
     public static boolean VerifyLoginData(String login, String password) {
 
         //Sam się zamknie
@@ -67,8 +73,8 @@ public class SQLHelper {
     }
 
     /**
-     * Funkcja wywołuje procuderę, dodającą nowrgo użytkownika i zwraca ok, w przypadku powodzenia
-     * W przypadku napotkania  błędu, zwraca jego komunikat
+     * Funkcja wywołuje procuderę, dodającą nowgo użytkownika. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
      */
     public static void AddNewUser(String login, String password) throws SQLException {
 
@@ -92,8 +98,8 @@ public class SQLHelper {
     }
 
     /**
-     * Funkcja wywołuje procuderę, dodającą nowrgo użytkownika i zwraca ok, w przypadku powodzenia
-     * W przypadku napotkania  błędu, zwraca jego komunikat
+     * Funkcja wywołuje procuderę, dodającą nową lokalizację. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
      */
     public static void AddNewLocation(String locationName) throws SQLException {
 
@@ -113,6 +119,10 @@ public class SQLHelper {
         }
     }
 
+    /**
+     * Funkcja wywołuje procuderę, wykonującą wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     */
     public static String DoInput(String getFrom,  ArrayList<AssortmentEntity> listOfAssortments) throws SQLException {
 
         Statement sqlStatement = null;
@@ -149,6 +159,10 @@ public class SQLHelper {
         }
     }
 
+    /**
+     * Funkcja wywołuje procuderę, wykonującą transfer. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     */
     public static String DoTransfer(String fromLocation, String toLocation,String assortmentName, float quantity) throws SQLException {
 
         Statement sqlStatement = null;
@@ -183,8 +197,8 @@ public class SQLHelper {
         }
     }
     /**
-     * Funkcja wywołuje procuderę, dodającą nowy towar i zwraca ok, w przypadku powodzenia
-     * W przypadku napotkania  błędu, zwraca jego komunikat
+     * Funkcja wywołuje procuderę, dodającą nowy towar. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
      */
     public static void AddNewAssortment(String assortmentName) throws SQLException {
 
@@ -204,6 +218,10 @@ public class SQLHelper {
         }
     }
 
+    /**
+     * Funkcja wywołuje procuderę, dodającą nowego klienta. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     */
     public static void AddNewContractor(String contractorName) throws SQLException {
 
         //Sam się zamknie
@@ -258,7 +276,8 @@ public class SQLHelper {
     }
 
     /**
-     * Funkcja
+     * Funkcja wywołuje procuderę, wykonującą wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
      */
     public static String DoOutput(String sendFrom, String sendTo, ArrayList<AssortmentEntity> listOfAssortments) throws SQLException {
 

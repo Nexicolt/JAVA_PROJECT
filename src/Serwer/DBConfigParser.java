@@ -3,6 +3,9 @@ package Serwer;
 import java.io.*;
 import java.util.HashMap;
 
+/**
+ * Prosta klasa pomocniczna, odpowiedzialna za parsowanie pliku konfiguracyjnego z danymi połączeniowymi do bazy MYSQL
+ */
 public class DBConfigParser {
 
     HashMap<String, String> fileKeys = new HashMap<String, String>();
@@ -15,6 +18,9 @@ public class DBConfigParser {
             String line = "";
             while((line = bufferedReader.readLine()) != null){
                 var splittedLine = line.split(":");
+
+                //kontynyuj pętle, jesli linia była pusta, lub nie posiadała znaku ':'
+                if(splittedLine.length == 0) continue;
 
                 fileKeys.put(splittedLine[0],(splittedLine.length == 1) ? "" : splittedLine[1]);
             }
@@ -29,8 +35,6 @@ public class DBConfigParser {
 
     /**
      * Zwraca klucz z wcześniej odczytanego cxonfigu
-     * @param keyName
-     * @return
      */
     public String getProperty(String keyName){
         return fileKeys.get(keyName);

@@ -10,7 +10,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-//// TODO: 09.06.2021 opisz Ci jutro
+/**
+ * Klasa reprezentuje okno, które wyskakuje po wciśnieciu przycisku edycji asrotymentu, na tworzonym wydaniu
+ */
 public class OutputView_EditAssortmentFrame extends JDialog implements ActionListener {
     private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
     private JButtonDialogStyle saveButton, closeButton;
@@ -21,7 +23,7 @@ public class OutputView_EditAssortmentFrame extends JDialog implements ActionLis
      * Konstruktor wyświetla okno i przechywuje referencję do okna rodzica oraz wpisuje przekazane dane asortymentu
      */
     public OutputView_EditAssortmentFrame(OutputView outputPanelHandler, String assortmentName,
-                                          String lokalizationName, float count){
+                                          String lokalizationName, float count) {
         parrentOutputPanel = outputPanelHandler;
 
         init();
@@ -33,8 +35,12 @@ public class OutputView_EditAssortmentFrame extends JDialog implements ActionLis
 
 
     }
-    public void init(){
-        setSize(400,400);
+
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
+    public void init() {
+        setSize(400, 400);
         setResizable(false);
 
         Box verticalDialogBox = Box.createVerticalBox();
@@ -60,7 +66,7 @@ public class OutputView_EditAssortmentFrame extends JDialog implements ActionLis
         verticalJPanelBox.add(totalJFlied);
 
         JPanel buttonGroupPanel = new JPanel();
-        buttonGroupPanel.setLayout(new GridLayout(0,2,10,10));
+        buttonGroupPanel.setLayout(new GridLayout(0, 2, 10, 10));
 
         closeButton = new JButtonDialogStyle("Rezygnuj");
         closeButton.addActionListener(this);
@@ -81,19 +87,19 @@ public class OutputView_EditAssortmentFrame extends JDialog implements ActionLis
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
-        if(source.equals(closeButton)){
+        if (source.equals(closeButton)) {
             this.dispose();
             parrentOutputPanel.setVisible(true);
         }
         //Dla przycisku zapisz -> wywołaj metodę edytowania newgo asortyemnu, na obiekcie JPanelu rodzica
-        else if(source.equals(saveButton)){
+        else if (source.equals(saveButton)) {
             //Sprawdź inputy
-            if(isAnyInputBlank()){
+            if (isAnyInputBlank()) {
                 JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
                 return;
             }
             parrentOutputPanel.EditAssortent(assortmentJFlied.getText(),
-                                        fromLocationJFlied.getText(), Float.parseFloat(totalJFlied.getText().replace(',', '.')));
+                    fromLocationJFlied.getText(), Float.parseFloat(totalJFlied.getText().replace(',', '.')));
             this.dispose();
             parrentOutputPanel.setVisible(true);
         }
@@ -102,7 +108,7 @@ public class OutputView_EditAssortmentFrame extends JDialog implements ActionLis
     /**
      * Funkcja sprawdza, czy któryś z inputów nie jest pusty
      */
-    private boolean isAnyInputBlank(){
+    private boolean isAnyInputBlank() {
         return fromLocationJFlied.getText().isBlank() && assortmentJFlied.getText().isBlank()
                 && totalJFlied.getText().isBlank();
     }

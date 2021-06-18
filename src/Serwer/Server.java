@@ -39,6 +39,9 @@ public class Server {
         }
     }
 
+    /**
+     * Główna funkcja serwera, to ona uruchamia cały serwer
+     */
     public static void main(String[] args) {
         Server server = new Server();
         try {

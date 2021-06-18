@@ -8,6 +8,9 @@ import java.net.Socket;
 
 import static Style.JoptionPaneMessages.showErrorPopup;
 
+/**
+ * Klasa rozpoczynająca inicjalizację modułu klienta
+ */
 public class WMS{
     public static int connectionPort = 14432;
     public static String connectionAddress = "Localhost";
@@ -17,7 +20,9 @@ public class WMS{
     private static PrintWriter streamToServer;
     private static BufferedReader streamFromServer;
 
-
+    /**
+     * Główna funkcja, inizjalizująca aplikację klienta
+     */
     public static void main(String[] args)  {
         //Utwórz socket połączeniowy z serwerem i przekazuj go przez refrencję, by uniknąć redundancji
         // i tworzenia socketu w każdej klasie, pochodnej od JFrame

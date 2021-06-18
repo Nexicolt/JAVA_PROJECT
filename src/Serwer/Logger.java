@@ -4,6 +4,9 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Klasa pomocnicza, odpowiedzialna za wpisywanie logów do pliku
+ */
 public class Logger {
 
     private static final String logsFileName = "logs.log";

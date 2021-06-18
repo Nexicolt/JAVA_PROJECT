@@ -18,6 +18,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ *  Klasa reperezntuje widok stanów magazynowych i obsługuje interakcje użytkownika, związane z filtrowaniem wyników
+ */
 public class StockItemView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
     private JButtonOptionStyle filterButton, backButton;
@@ -36,6 +39,9 @@ public class StockItemView extends JPanel implements ActionListener {
         LoadStockItemList();
     }
 
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init() {
         setSize(new Dimension(500, 500));
         //box glowny do pozycjnonwania w pionie
@@ -71,7 +77,11 @@ public class StockItemView extends JPanel implements ActionListener {
         stockItemList = new JList();
         stockItemList.setPreferredSize(new Dimension(800, 300));
         stockItemList.setCellRenderer(new AssortmentEntityCellView());
-        stockListPanel.add(stockItemList);
+
+        JScrollPane scrollPane = new JScrollPane(stockItemList);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        stockListPanel.add(scrollPane);
 
         backButton = new JButtonOptionStyle("Wstecz");
         backButton.addActionListener(this);

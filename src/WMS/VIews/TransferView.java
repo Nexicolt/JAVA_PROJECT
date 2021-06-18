@@ -134,12 +134,16 @@ public class TransferView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja sprawdza, czy którykolwiek z inputó jest wypełniony
+     * Funkcja sprawdza, czy którykolwiek z inputów jest wypełniony
      */
     private boolean isAnyInputField(){
         return !totalJTextField.getText().isBlank() || !assortmentJTextField.getText().isBlank()
                 || !fromLocationJTextField.getText().isBlank() || !tolocationJTextField.getText().isBlank();
     }
+
+    /**
+     * Głowna funkcja, odpowiedzialna z wykonanaie transferu. Waliduje wprowadzone dane, wysyła request do serwera i wyświetla otrzymaną odpowiedź
+     */
     private void doTransferCommand() {
         //Główny JSOn, wysyłany do serwera
         JSONObject transferCommandJSON = new JSONObject();

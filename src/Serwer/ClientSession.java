@@ -11,6 +11,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Klasa reprezentująca pojedynczego klienta. Każdy nowo połączony klient, to nowy obiekt klasy.
+ * Odpowiada za nasłuchiwanie przychodzących komunikatów i odsyłanie komunikatów zwrotnych
+ */
 class ClientSession extends Thread {
     private final Socket clientCommunicatorSocket;
     private BufferedReader inputStream;
@@ -21,8 +25,6 @@ class ClientSession extends Thread {
 
     /**
      * Konstruktor, inizjalizujący socket oraz strumienie wyjścia/wejścia
-     *
-     * @param _socket
      */
     public ClientSession(Socket _socket) {
         clientCommunicatorSocket = _socket;
@@ -35,7 +37,7 @@ class ClientSession extends Thread {
     }
 
     /**
-     * Główna funckja wątku, odpowiedzialna za nasłuchiwanie
+     * Główna funckja wątku, odpowiedzialna za nasłuchiwanie i wywołanie odpowiednich metod, odpowiadających klientowi
      */
     public void run() {
         String jsonMessageFromClient;
@@ -138,6 +140,10 @@ class ClientSession extends Thread {
         return serwerResponseJson;
     }
 
+    /**
+     * Funkcjaa wywoływana przy wykonywaniu wydania. Parsuje otrzymanego JSON'a, wywołuję funkcję z SQLHelpera i na
+     * podstawie jej rezultatów wysyła zwrotkę do klienta
+     */
     private JSONObject doInput(JSONObject JSONDataFromClient) {
 
         //Wyciągnij obiorcę i nadawcę z JSONA
@@ -179,6 +185,10 @@ class ClientSession extends Thread {
         return serwerResponseJson;
     }
 
+    /**
+     * Funkcjaa wywoływana przy wykonywaniu transferu. Parsuje otrzymanego JSON'a, wywołuję funkcję z SQLHelpera i na
+     * podstawie jej rezultatów wysyła zwrotkę do klienta
+     */
     private JSONObject doTransfer(JSONObject JSONDataFromClient) {
 
         //Wyciągnij obiorcę i nadawcę z JSONA
@@ -420,7 +430,7 @@ class ClientSession extends Thread {
     }
 
     /**
-     * Create file if not exist.
+     * Funckja pomocnicza -> towrzy podane w parametrze plik, jesli ten nie istnieje
      */
     public static void createFileIfNotExists(String path) {
         try {
@@ -434,7 +444,7 @@ class ClientSession extends Thread {
                 writer.close();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+           logger.WriteLog("Błąd tworzenia pliku ( " + path + ") -> " + e.getMessage(), "ERROR");
         }
     }
 }

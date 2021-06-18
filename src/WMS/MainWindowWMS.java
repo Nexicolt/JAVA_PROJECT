@@ -12,7 +12,10 @@ import java.awt.event.ComponentListener;
 import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-
+/**
+ * Klasa reperezntuje główno okno aplikacji, po poprawnym zalogowaniu. To ona wywołuje JPanela, stanowiące osobne funkcjonalności.
+ * Jest swego rodzaju kontenrem całego GUI
+ */
 public class MainWindowWMS extends AbstractJFrame implements ActionListener, ComponentListener {
 
     //Osobna Klasa JButtonMainStyle dziedziczy po JButton zawiera gotowe style dla przyciskow menu Glownego
@@ -28,7 +31,9 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
         this.userName = userName;
     }
 
-    //Funkcja wywolania widoku menu głównego aplikacji
+    /**
+     *     Funkcja wywolania widoku menu głównego aplikacji
+     */
     public void init(){
         setSize(1100,550);
         setResizable(false);
@@ -133,6 +138,10 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
     @Override
     public void componentMoved(ComponentEvent e) { }
 
+    /**
+     * Funkcja centruje okno aplikacji bo jej uwidocznieniu. Konieczne do immplementacji, bo poprawna realizacja procedu magazynowego,
+     * pwooduje ponowne uwidocznienie frame'a, po tym jak został on schowany po kliknięciu w określoną funkcjnalność
+     */
     @Override
     public void componentShown(ComponentEvent e) {
         if(e.getComponent() == mainWindowPanel){

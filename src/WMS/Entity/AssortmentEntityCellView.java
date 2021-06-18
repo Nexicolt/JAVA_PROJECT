@@ -16,6 +16,10 @@ public class AssortmentEntityCellView extends JLabel implements ListCellRenderer
         setIconTextGap(12);
     }
 
+    /**
+     * Zaimplementowana z intrfejsu funkcja, Jest ona wywoływana przy wyświetlaniu rekordów w JList
+     * To ona zwraca String'a, wyświetlanego w pojedynczym rekordzie. Nadpisana, by wyświetłała nazwę asortymntu, lokalziacje oraz ilość
+     */
     public Component getListCellRendererComponent(JList list, Object value,
                                                   int index, boolean isSelected, boolean cellHasFocus) {
         AssortmentEntity entry = (AssortmentEntity) value;

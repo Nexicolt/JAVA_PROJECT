@@ -3,7 +3,10 @@ package Style;
 import javax.swing.*;
 import java.awt.*;
 
-//Klasa zawiera zdefiniowany wyglad przyciskow menu glownego
+/**
+ * Klasa reprezentująca styl przycisków w menu głównym (duże przyciski). Wszystkie tego typu kontorlki sa jednakowe w aplikacji, więc zosaatła utworozna klasa,
+ * która tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w dużym stopniu)
+ */
 
 public class JButtonMainStyle extends JButton {
     public JButtonMainStyle(String name){

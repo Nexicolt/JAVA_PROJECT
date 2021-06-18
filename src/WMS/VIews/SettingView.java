@@ -13,7 +13,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-//TODO Do poprawy wyswietlanie przyciskow (FILIP)
+/**
+ * Klasa reprezntuje panel z ustawienia, na którym można dodawać lokalizację, użytkowników, asortymenty...
+ */
 public class SettingView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
     private JButtonMainStyle addUserButton, addLoactionButton,addContractorButton, addAssortmentButton, backButton;
@@ -27,7 +29,9 @@ public class SettingView extends JPanel implements ActionListener {
         this.mainContainer = mainContainer;
         init();
     }
-
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init() {
         //box glowny do pozycjnonwania w pionie
         Box verticalMainBox = Box.createVerticalBox();
@@ -145,7 +149,7 @@ public class SettingView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja wyświetla pole do wpisania anzwy, dla nowej lokalizacji i wysyła request do serwera
+     * Funkcja wyświetla pole do wpisania nazwy, dla nowej lokalizacji i wysyła request do serwera
      */
     private void addNewLocationCommand(){
 
@@ -235,12 +239,16 @@ public class SettingView extends JPanel implements ActionListener {
             } catch (IOException ignored) { }
         }
     }
+
+    /**
+     * Funkcja wyświetla pole do wpisania nazwy, dla nowego klienta i wysyła request do serwera
+     */
     private void addNewContractor(){
 
         String contractorName=JOptionPane.showInputDialog(null,"Wprowadź nazwę kontrachenta");
 
 
-        //Wyślij dane do serwera, jeśliwporwadzona nazwa nie jest pusta
+        //Wyślij dane do serwera, jeśli wporwadzona nazwa nie jest pusta
         if (contractorName != null && !contractorName.isBlank()) {
 
             //Utwórz JSON'a, do wysyłki
@@ -252,7 +260,7 @@ public class SettingView extends JPanel implements ActionListener {
             createContractorJSON.put("action", "create_contractor");
             createContractorJSON.put("data", jsonData);
 
-            //Wysyłka JSON'a do serwera, z danymi nowej lokalizacji
+            //Wysyłka JSON'a do serwera, z danymi nowego klienta
             mainWindowWMS.GetStreamToServer().println(createContractorJSON);
 
             //Czekaj na odpowiedź od serwera
@@ -263,7 +271,7 @@ public class SettingView extends JPanel implements ActionListener {
                         //Sparsuj odpowiedź do typu JSON
                         JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                        //Jeśli odesłał OK, to lokalizacja dodana poprawnie
+                        //Jeśli odesłał OK, to klient dodany poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
                             JoptionPaneMessages.showSuccessPopup("Poprawnie dodano kontrachenta");
                         }else{

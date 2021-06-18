@@ -16,7 +16,9 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-
+/**
+ * Klasa reprezentuje okno i logikę biznesową  dla panelu logowania
+ */
 public class LoginForm extends AbstractJFrame implements ActionListener {
 
     JTextField loginInputField;
@@ -131,7 +133,6 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
 
     /**
      * Funkcja oczekuje na odpowiedź od serwera, w kwestii danych logowania
-     * <p>
      * Nie jest osobnym wątkiem, bo odebranie danych musi sie odbyć liniowo z ich wysłaniem. Gdyby zrobić odbieranie danych asonchroniczne,
      * to klient mógłby zapchać serwer ciągłym wysyłaniem zapytań o weryfikację danych logowania
      */

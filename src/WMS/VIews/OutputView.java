@@ -14,7 +14,9 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//JPanel wyswietalacy wydania wywolywany po kliknieciu przycisku wydaj
+/**
+ * Klasa reperezntuająca GUI okna z wydaniami. Posiada implementację komunikacji z serwerem
+ */
 public class OutputView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
     private JFliedTextStyle fromFiled, toFiled;
@@ -33,6 +35,9 @@ public class OutputView extends JPanel implements ActionListener {
         init();
     }
 
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init() {
         setSize(new Dimension(500, 500));
 
@@ -91,6 +96,8 @@ public class OutputView extends JPanel implements ActionListener {
         outputList.setPreferredSize(new Dimension(500, 300));
         jPanelOption3.add(outputList);
 
+        JScrollPane scrollPane = new JScrollPane(outputList);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         //buttonGroupPanel dla przyciskow funkcjnych
         JPanel buttonGroupPanel = new JPanel();
@@ -108,7 +115,7 @@ public class OutputView extends JPanel implements ActionListener {
         jPanelOption1.add(verticalSetionBox);
         verticalMainBox.add(jPanelOption1);
         verticalMainBox.add(jPanelOption2);
-        verticalMainBox.add(jPanelOption3);
+        verticalMainBox.add(scrollPane);
         verticalMainBox.add(buttonGroupPanel);
         add(verticalMainBox);
         setVisible(true);
@@ -156,6 +163,7 @@ public class OutputView extends JPanel implements ActionListener {
             listOfAssortments.remove(outputList.getSelectedIndex());
             outputList.setListData(listOfAssortments.toArray());
 
+        //Przycisk zapisu *wykonania wydania)
         } else if (source.equals(saveButton)) {
             //Sprawdź, czy inputy nie są puste
             if(fromFiled.getText().isBlank() || toFiled.getText().isBlank()){

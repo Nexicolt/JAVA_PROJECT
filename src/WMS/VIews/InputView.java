@@ -14,13 +14,15 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
-//JPanel wyswietalacy przyjecia wywolywany po kliknieciu przycisku przyjmij
+/**
+ * Klasa reperezntuająca GUI okna z przyjęciami. Posiada implementację komunikacji z serwerem
+ */
 public class InputView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
     private JFliedTextStyle fromFiled;
     private JButtonOptionStyle addButton, editButton, removeButton;
     private JButtonOptionStyle saveButton, closeButton;
-    private JList outputList;
+    private JList inputList;
     private ArrayList<AssortmentEntity> listOfAssortments = new ArrayList<>();
     JPanel mainContainer;
 
@@ -33,6 +35,9 @@ public class InputView extends JPanel implements ActionListener {
         init();
     }
 
+    /**
+     * Funkcja buduje okno i ustawia je na widoczne
+     */
     public void init() {
         setSize(new Dimension(500, 500));
         //box glowny do pozycjnonwania w pionie
@@ -76,15 +81,17 @@ public class InputView extends JPanel implements ActionListener {
         //Joption3 dla ulozenia listy
         JPanel jPanelOption3 = new JPanel();
 
-        outputList = new JList();
+        inputList = new JList();
         //Dane w liście
-        outputList.setListData(listOfAssortments.toArray());
+        inputList.setListData(listOfAssortments.toArray());
         //Sposób reprezentacji danych, na podstawie nadpisanej klasy
-        outputList.setCellRenderer(new AssortmentEntityCellView());
+        inputList.setCellRenderer(new AssortmentEntityCellView());
 
-        outputList.setPreferredSize(new Dimension(500, 300));
-        jPanelOption3.add(outputList);
+        inputList.setPreferredSize(new Dimension(500, 300));
+        jPanelOption3.add(inputList);
 
+        JScrollPane scrollPane = new JScrollPane(inputList);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         //buttonGroupPanel dla przyciskow funkcjnych
         JPanel buttonGroupPanel = new JPanel();
@@ -102,7 +109,7 @@ public class InputView extends JPanel implements ActionListener {
         jPanelOption1.add(verticalSetionBox);
         verticalMainBox.add(jPanelOption1);
         verticalMainBox.add(jPanelOption2);
-        verticalMainBox.add(jPanelOption3);
+        verticalMainBox.add(scrollPane);
         verticalMainBox.add(buttonGroupPanel);
         add(verticalMainBox);
         setVisible(true);
@@ -130,11 +137,11 @@ public class InputView extends JPanel implements ActionListener {
             //Przycisk edycji asortymentu z listy
         } else if (source.equals(editButton)) {
             //Sprawdź, czy zaznaczono jakiś rekord na liście
-            if (outputList.getSelectedIndex() < 0) {
+            if (inputList.getSelectedIndex() < 0) {
                 JoptionPaneMessages.showErrorPopup("Nie wskazano rekordu z listy");
                 return;
             }
-            AssortmentEntity tmpEntity = listOfAssortments.get(outputList.getSelectedIndex());
+            AssortmentEntity tmpEntity = listOfAssortments.get(inputList.getSelectedIndex());
             new InputView_EditAssortmentFrame(this, tmpEntity.getName(),
                     tmpEntity.getLocalization(), tmpEntity.getCount());
             setVisible(false);
@@ -142,13 +149,13 @@ public class InputView extends JPanel implements ActionListener {
             //Przycisk usuwania asortymentu z listy
         } else if (source.equals(removeButton)) {
             //Sprawdź, czy zaznaczono jakiś rekord na liście
-            if (outputList.getSelectedIndex() < 0) {
+            if (inputList.getSelectedIndex() < 0) {
                 JoptionPaneMessages.showErrorPopup("Nie wskazano rekordu z listy");
                 return;
             }
             //Usuń asortyment i aktualizuj JList
-            listOfAssortments.remove(outputList.getSelectedIndex());
-            outputList.setListData(listOfAssortments.toArray());
+            listOfAssortments.remove(inputList.getSelectedIndex());
+            inputList.setListData(listOfAssortments.toArray());
 
         } else if (source.equals(saveButton)) {
 
@@ -179,7 +186,7 @@ public class InputView extends JPanel implements ActionListener {
      */
     public void AddNewAssortment(String assortmentName,String toLokalization, float count) {
         listOfAssortments.add(new AssortmentEntity(assortmentName, toLokalization,count));
-        outputList.setListData(listOfAssortments.toArray());
+        inputList.setListData(listOfAssortments.toArray());
     }
 
     /**
@@ -187,17 +194,21 @@ public class InputView extends JPanel implements ActionListener {
      * Dodaje nowy towar do JList i odświeża ją
      */
     public void EditAssortent(String assortmentName, String fromLokalization, float count) {
-        listOfAssortments.set(outputList.getSelectedIndex(), new AssortmentEntity(assortmentName, fromLokalization, count));
-        outputList.setListData(listOfAssortments.toArray());
+        listOfAssortments.set(inputList.getSelectedIndex(), new AssortmentEntity(assortmentName, fromLokalization, count));
+        inputList.setListData(listOfAssortments.toArray());
     }
 
     /**
      * Funkcja sprawdza, czy którekolwiek pole jest wypełnione
      */
     private boolean isAnyInputField() {
-        return !fromFiled.getText().isBlank() || outputList.getModel().getSize() == 0;
+        return !fromFiled.getText().isBlank() || inputList.getModel().getSize() == 0;
     }
 
+    /**
+     * Funkcja wywoływana przy kliknięciu przycisku "zapisz". Przygotowuje dane w formacie JSON dla serwera,
+     * wysyła komunikat i oczekuje odpowiedzi od serwera, aby pokazać użytkownikowi kod sukcesu lub błędu
+     */
     private void inputWarehouse() {
 
         JSONObject inputToWarehouseJSON = new JSONObject();
