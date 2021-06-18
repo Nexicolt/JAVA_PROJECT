@@ -42,6 +42,13 @@ class ClientSession extends Thread {
         try {
             while ((jsonMessageFromClient = inputStream.readLine()) != null) {
 
+                //W przypadku 'heartbeat', czyli wątku sprawdzającego, czy socket komunikacyjny nie został zamknięty
+                //wtedy wysyłamny jest po prostu tekst, bez JSON'a
+                if (jsonMessageFromClient.equals("heartbeat")){
+                    outputStream.println("pik-pik");
+                    continue;
+                }
+
                 //Serializacja JSON'a (tekstu), otrzymane od klienta, do formy obiektu
                 JSONObject jsonObject = new JSONObject(jsonMessageFromClient);
 
@@ -75,10 +82,6 @@ class ClientSession extends Thread {
                     outputStream.println(doInput(jsonObject));
                 } else if (actionPerformed.equals("transfer_operation")) {
                     outputStream.println(doTransfer(jsonObject));
-                //W przypadku 'heartbeat', czyli wątku sprawdzającego, czy socket komunikacyjny nie został zamknięty
-                //wtedy wysyłamny jest po prostu tekst, bez JSON'a
-                }else if (jsonMessageFromClient.equals("heartbeat")){
-                    outputStream.println("pik-pik");
                 }
             }
             inputStream.close();

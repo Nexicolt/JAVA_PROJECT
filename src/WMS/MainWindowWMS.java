@@ -119,8 +119,8 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
             add(settingView);
         }
         else if(source.equals(logoutButton)){
-            dispose();
             new LoginForm("Logowanie", communicationSocket, streamToServer, streamFromServer).init();
+            dispose();
         }
 
         //Pakowanie zawartości frame i środkowanie na ekranie

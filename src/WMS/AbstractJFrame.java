@@ -24,7 +24,6 @@ public abstract class AbstractJFrame extends JFrame implements WindowListener {
         communicationSocket = _commSocket;
         streamToServer = _streamToServer;
         streamFromServer = _streamFromServer;
-        addWindowListener(this);
     }
 
     /**
