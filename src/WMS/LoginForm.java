@@ -94,9 +94,11 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
             }
             //Wyślij zapytanie do serwera z danymi logowania (zwróci TRUE dla poprawnych danych)
             if (sendLoginData()) {
-                new MainWindowWMS("Warehouse Management System",
-                                    communicationSocket, streamToServer, streamFromServer, loginInputField.getText() ).init();
+                MainWindowWMS mainWidnow = new MainWindowWMS("Warehouse Management System",
+                                    communicationSocket, streamToServer, streamFromServer, loginInputField.getText() );
+                mainWidnow.init();
                 dispose();
+                new SocketChecker(streamToServer, streamFromServer, mainWidnow).start();
             } else {
                 JoptionPaneMessages.showErrorPopup("Błędne dane logowania");
             }
