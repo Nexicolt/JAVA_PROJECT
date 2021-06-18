@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Klasa reprezntuje panel z ustawienia, na którym można dodawać lokalizację, użytkowników, asortymenty...
+ * Klasa reprezntuje panel z ustawienia, na ktorym mozna dodawać lokalizacje, uzytkownikow, asortymenty...
  */
 public class SettingView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
@@ -22,7 +22,7 @@ public class SettingView extends JPanel implements ActionListener {
     JPanel mainContainer;
 
     /**
-     * Konstruktor inicjalizuje referencje do głownego JPanel'u, okna WMS'a
+     * Konstruktor inicjalizuje referencje do glownego JPanel'u, okna WMS'a
      */
     public SettingView(MainWindowWMS mainWindowWMS, JPanel mainContainer){
         this.mainWindowWMS = mainWindowWMS;
@@ -37,12 +37,12 @@ public class SettingView extends JPanel implements ActionListener {
         Box verticalMainBox = Box.createVerticalBox();
 
         verticalMainBox.add(Box.createVerticalStrut(20));
-        addUserButton = new JButtonMainStyle("Dodaj użytkownika");
+        addUserButton = new JButtonMainStyle("Dodaj uzytkownika");
         addUserButton.addActionListener(this);
         verticalMainBox.add(addUserButton);
 
         verticalMainBox.add(Box.createVerticalStrut(20));
-        addLoactionButton = new JButtonMainStyle("Dodaj lokalizację");
+        addLoactionButton = new JButtonMainStyle("Dodaj lokalizacje");
         addLoactionButton.addActionListener(this);
         verticalMainBox.add(addLoactionButton);
 
@@ -84,34 +84,34 @@ public class SettingView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja wyświetla pole do wpisania nazwy użytkownika i zwraca komunikat z serwera, z wynikiem operacji dodawania usera
+     * Funkcja wyswietla pole do wpisania nazwy uzytkownika i zwraca komunikat z serwera, z wynikiem operacji dodawania usera
      */
     private void addNewUserCommand(){
 
-        //JoptionPane z dwoma polami (na login i hasło)
+        //JoptionPane z dwoma polami (na login i haslo)
         JTextField loginInput = new JTextField(10);
         JTextField passwordInput = new JTextField(10);
 
         JPanel myPanel = new JPanel();
         myPanel.add(new JLabel("Login:"));
         myPanel.add(loginInput);
-        myPanel.add(Box.createHorizontalStrut(15)); // przestrzeń między inputami
-        myPanel.add(new JLabel("Hasło:"));
+        myPanel.add(Box.createHorizontalStrut(15)); // przestrzen miedzy inputami
+        myPanel.add(new JLabel("Haslo:"));
         myPanel.add(passwordInput);
 
         int result = JOptionPane.showConfirmDialog(null, myPanel,
-                "Wprowadź dane dla nowego użytkownika", JOptionPane.OK_CANCEL_OPTION);
+                "Wprowadz dane dla nowego uzytkownika", JOptionPane.OK_CANCEL_OPTION);
 
-        //Wyślij dane do serwera, jeśli kliknięto "OK"
+        //Wyslij dane do serwera, jesli kliknieto "OK"
         if (result == JOptionPane.OK_OPTION) {
 
-            //Sprawdź, czy pola zostały wypełnione
+            //Sprawdz, czy pola zostaly wypelnione
             if(loginInput.getText().isBlank() || passwordInput.getText().isBlank()){
-                JoptionPaneMessages.showErrorPopup("Oba pola muszą zostać wyepłnione");
+                JoptionPaneMessages.showErrorPopup("Oba pola musza zostać wyeplnione");
                 return;
             }
 
-            //Utwórz JSON'a, do wysyłki
+            //Utworz JSON'a, do wysylki
             JSONObject createUserJSON = new JSONObject();
 
             JSONObject jsonData = new JSONObject();
@@ -121,23 +121,23 @@ public class SettingView extends JPanel implements ActionListener {
             createUserJSON.put("action", "create_user");
             createUserJSON.put("data", jsonData);
 
-            //Wysyłka JSON'a do serwera, z danymi nowego użytkownika
+            //Wysylka JSON'a do serwera, z danymi nowego uzytkownika
             mainWindowWMS.GetStreamToServer().println(createUserJSON);
 
-            //Czekaj na odpowiedź od serwera
+            //Czekaj na odpowiedz od serwera
             try {
                 while (true) {
                     String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                     if (serverResponse != null) {
-                        //Sparsuj odpowiedź do typu JSON
+                        //Sparsuj odpowiedz do typu JSON
                         System.out.println(serverResponse);
                         JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                        //Jeśli odesłał OK, to użytkownik utworzony poprawnie
+                        //Jesli odeslal OK, to uzytkownik utworzony poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
-                            JoptionPaneMessages.showSuccessPopup("Poprawnie dodano użytkownika");
+                            JoptionPaneMessages.showSuccessPopup("Poprawnie dodano uzytkownika");
                         }else{
-                            //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                            //Jesli nie odeslal ok, to wyswietl zwrocony komunikat bledu
                             String erroMessage = serverResponseJSON.getString("message");
                             JoptionPaneMessages.showErrorPopup(erroMessage);
                         }
@@ -149,18 +149,18 @@ public class SettingView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja wyświetla pole do wpisania nazwy, dla nowej lokalizacji i wysyła request do serwera
+     * Funkcja wyswietla pole do wpisania nazwy, dla nowej lokalizacji i wysyla request do serwera
      */
     private void addNewLocationCommand(){
 
-        String locationName=JOptionPane.showInputDialog(null,"Wprowadź nazwę lokalizacji");
+        String locationName=JOptionPane.showInputDialog(null,"Wprowadz nazwe lokalizacji");
 
 
-        //Wyślij dane do serwera, jeśliwporwadzona nazwa nie jest pusta
+        //Wyslij dane do serwera, jesliwporwadzona nazwa nie jest pusta
         if (locationName != null && !locationName.isBlank()) {
 
 
-            //Utwórz JSON'a, do wysyłki
+            //Utworz JSON'a, do wysylki
             JSONObject createLocationJSON = new JSONObject();
 
             JSONObject jsonData = new JSONObject();
@@ -169,22 +169,22 @@ public class SettingView extends JPanel implements ActionListener {
             createLocationJSON.put("action", "create_location");
             createLocationJSON.put("data", jsonData);
 
-            //Wysyłka JSON'a do serwera, z danymi nowej lokalizacji
+            //Wysylka JSON'a do serwera, z danymi nowej lokalizacji
             mainWindowWMS.GetStreamToServer().println(createLocationJSON);
 
-            //Czekaj na odpowiedź od serwera
+            //Czekaj na odpowiedz od serwera
             try {
                 while (true) {
                     String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                     if (serverResponse != null) {
-                        //Sparsuj odpowiedź do typu JSON
+                        //Sparsuj odpowiedz do typu JSON
                         JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                        //Jeśli odesłał OK, to lokalizacja dodana poprawnie
+                        //Jesli odeslal OK, to lokalizacja dodana poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
-                            JoptionPaneMessages.showSuccessPopup("Poprawnie dodano lokalizację");
+                            JoptionPaneMessages.showSuccessPopup("Poprawnie dodano lokalizacje");
                         }else{
-                            //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                            //Jesli nie odeslal ok, to wyswietl zwrocony komunikat bledu
                             String erroMessage = serverResponseJSON.getString("message");
                             JoptionPaneMessages.showErrorPopup(erroMessage);
                         }
@@ -195,17 +195,17 @@ public class SettingView extends JPanel implements ActionListener {
         }
     }
     /**
-     * Funkcja wyświetla pole do wpisania anzwy, dla nowego asortymentu i wysyła request do serwera
+     * Funkcja wyswietla pole do wpisania anzwy, dla nowego asortymentu i wysyla request do serwera
      */
     private void addNewAssortment(){
 
-        String assortmentName=JOptionPane.showInputDialog(null,"Wprowadź nazwę asortymentu");
+        String assortmentName=JOptionPane.showInputDialog(null,"Wprowadz nazwe asortymentu");
 
 
-        //Wyślij dane do serwera, jeśliwporwadzona nazwa nie jest pusta
+        //Wyslij dane do serwera, jesliwporwadzona nazwa nie jest pusta
         if (assortmentName != null && !assortmentName.isBlank()) {
 
-            //Utwórz JSON'a, do wysyłki
+            //Utworz JSON'a, do wysylki
             JSONObject createAssortmentJSON = new JSONObject();
 
             JSONObject jsonData = new JSONObject();
@@ -214,22 +214,22 @@ public class SettingView extends JPanel implements ActionListener {
             createAssortmentJSON.put("action", "create_assortment");
             createAssortmentJSON.put("data", jsonData);
 
-            //Wysyłka JSON'a do serwera, z danymi nowej lokalizacji
+            //Wysylka JSON'a do serwera, z danymi nowej lokalizacji
             mainWindowWMS.GetStreamToServer().println(createAssortmentJSON);
 
-            //Czekaj na odpowiedź od serwera
+            //Czekaj na odpowiedz od serwera
             try {
                 while (true) {
                     String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                     if (serverResponse != null) {
-                        //Sparsuj odpowiedź do typu JSON
+                        //Sparsuj odpowiedz do typu JSON
                         JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                        //Jeśli odesłał OK, to lokalizacja dodana poprawnie
+                        //Jesli odeslal OK, to lokalizacja dodana poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
                             JoptionPaneMessages.showSuccessPopup("Poprawnie dodano asortyment");
                         }else{
-                            //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                            //Jesli nie odeslal ok, to wyswietl zwrocony komunikat bledu
                             String erroMessage = serverResponseJSON.getString("message");
                             JoptionPaneMessages.showErrorPopup(erroMessage);
                         }
@@ -241,17 +241,17 @@ public class SettingView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja wyświetla pole do wpisania nazwy, dla nowego klienta i wysyła request do serwera
+     * Funkcja wyswietla pole do wpisania nazwy, dla nowego klienta i wysyla request do serwera
      */
     private void addNewContractor(){
 
-        String contractorName=JOptionPane.showInputDialog(null,"Wprowadź nazwę kontrachenta");
+        String contractorName=JOptionPane.showInputDialog(null,"Wprowadz nazwe kontrachenta");
 
 
-        //Wyślij dane do serwera, jeśli wporwadzona nazwa nie jest pusta
+        //Wyslij dane do serwera, jesli wporwadzona nazwa nie jest pusta
         if (contractorName != null && !contractorName.isBlank()) {
 
-            //Utwórz JSON'a, do wysyłki
+            //Utworz JSON'a, do wysylki
             JSONObject createContractorJSON = new JSONObject();
 
             JSONObject jsonData = new JSONObject();
@@ -260,22 +260,22 @@ public class SettingView extends JPanel implements ActionListener {
             createContractorJSON.put("action", "create_contractor");
             createContractorJSON.put("data", jsonData);
 
-            //Wysyłka JSON'a do serwera, z danymi nowego klienta
+            //Wysylka JSON'a do serwera, z danymi nowego klienta
             mainWindowWMS.GetStreamToServer().println(createContractorJSON);
 
-            //Czekaj na odpowiedź od serwera
+            //Czekaj na odpowiedz od serwera
             try {
                 while (true) {
                     String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                     if (serverResponse != null) {
-                        //Sparsuj odpowiedź do typu JSON
+                        //Sparsuj odpowiedz do typu JSON
                         JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                        //Jeśli odesłał OK, to klient dodany poprawnie
+                        //Jesli odeslal OK, to klient dodany poprawnie
                         if(serverResponseJSON.getString("status").equals("success")){
                             JoptionPaneMessages.showSuccessPopup("Poprawnie dodano kontrachenta");
                         }else{
-                            //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                            //Jesli nie odeslal ok, to wyswietl zwrocony komunikat bledu
                             String erroMessage = serverResponseJSON.getString("message");
                             JoptionPaneMessages.showErrorPopup(erroMessage);
                         }

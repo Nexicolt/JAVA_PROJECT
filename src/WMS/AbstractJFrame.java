@@ -9,8 +9,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 /**
- * Klasa abstrakcyjna dla okien, typu JFrame, która agreguje kontruktor i metodę, zamykającą połączenie z serwerem,
- * w przypadku zamknięcia palikacji. Model obiektowy - tym sposobem unikam redundancji kodu i implemetowania metod w każdej
+ * Klasa abstrakcyjna dla okien, typu JFrame, ktora agreguje kontruktor i metode, zamykajaca polaczenie z serwerem,
+ * w przypadku zamkniecia palikacji. Model obiektowy - tym sposobem unikam redundancji kodu i implemetowania metod w kazdej
  * klasie z osobna
  */
 public abstract class AbstractJFrame extends JFrame implements WindowListener {
@@ -20,7 +20,7 @@ public abstract class AbstractJFrame extends JFrame implements WindowListener {
     protected BufferedReader streamFromServer;
 
     /**
-     * Konstruktor inizjalizuje tytuł okna i przechwytuje refrencję do socketu komunikacji i strumieni
+     * Konstruktor inizjalizuje tytul okna i przechwytuje refrencje do socketu komunikacji i strumieni
      */
     AbstractJFrame(String windowName, Socket _commSocket, PrintWriter _streamToServer, BufferedReader _streamFromServer) {
         super(windowName);
@@ -30,21 +30,21 @@ public abstract class AbstractJFrame extends JFrame implements WindowListener {
     }
 
     /**
-     * Zwraca referencję do strumienia komunikacyjnego z serwerem
+     * Zwraca referencje do strumienia komunikacyjnego z serwerem
      */
     public PrintWriter GetStreamToServer(){
         return streamToServer;
     }
 
     /**
-     * Zwraca referencję do strumienia komunikacyjnego z serwerem
+     * Zwraca referencje do strumienia komunikacyjnego z serwerem
      */
     public BufferedReader GetStreamFromServer(){
         return streamFromServer;
     }
 
     /**
-     * Zamykanie połączenia z serwerem, poprzez wciśnięcie "X"
+     * Zamykanie polaczenia z serwerem, poprzez wcisniecie "X"
      */
     @Override
     public void windowClosing(WindowEvent e) {

@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Klasa reprezentuje okno, które wyskakuje po wciśnieciu przycisku edytowania  asrotymentu, na tworzonym przyjęciu
+ * Klasa reprezentuje okno, ktore wyskakuje po wcisnieciu przycisku edytowania  asrotymentu, na tworzonym przyjeciu
  */
 public class InputView_EditAssortmentFrame extends JDialog implements ActionListener {
     private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
@@ -20,7 +20,7 @@ public class InputView_EditAssortmentFrame extends JDialog implements ActionList
     private final InputView parrentInputPanel;
 
     /**
-     * Konstruktor wyświetla okno i przechywuje referencję do okna rodzica oraz wpisuje przekazane dane asortymentu
+     * Konstruktor wyswietla okno i przechywuje referencje do okna rodzica oraz wpisuje przekazane dane asortymentu
      */
     public InputView_EditAssortmentFrame(InputView inputPanelHandler, String assortmentName,
                                           String lokalizationName, float count){
@@ -50,18 +50,21 @@ public class InputView_EditAssortmentFrame extends JDialog implements ActionList
         verticalJPanelBox.add(fromLocationLabel);
 
         fromLocationJFlied = new JFiledDialogStyle();
+        fromLocationJFlied.addActionListener(this);
         verticalJPanelBox.add(fromLocationJFlied);
 
         JLabelStyle assortmentLabel = new JLabelStyle("Assortment");
         verticalJPanelBox.add(assortmentLabel);
 
         assortmentJFlied = new JFiledDialogStyle();
+        assortmentJFlied.addActionListener(this);
         verticalJPanelBox.add(assortmentJFlied);
 
-        JLabelStyle totalLabel = new JLabelStyle("Ilość");
+        JLabelStyle totalLabel = new JLabelStyle("Ilosć");
         verticalJPanelBox.add(totalLabel);
 
         totalJFlied = new JFiledDialogStyle();
+        totalJFlied.addActionListener(this);
         verticalJPanelBox.add(totalJFlied);
 
         JPanel buttonGroupPanel = new JPanel();
@@ -90,22 +93,24 @@ public class InputView_EditAssortmentFrame extends JDialog implements ActionList
             this.dispose();
             parrentInputPanel.setVisible(true);
         }
-        //Dla przycisku zapisz -> wywołaj metodę edytowania newgo asortyemnu, na obiekcie JPanelu rodzica
+        //Dla przycisku zapisz -> wywolaj metode edytowania newgo asortyemnu, na obiekcie JPanelu rodzica
         else if(source.equals(saveButton)){
-            //Sprawdź inputy
+            //Sprawdz inputy
             if(isAnyInputBlank()){
-                JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
+                JoptionPaneMessages.showErrorPopup("Wszystkie pola musza być wypelnione");
                 return;
             }
             parrentInputPanel.EditAssortent(assortmentJFlied.getText(),
                     fromLocationJFlied.getText(), Float.parseFloat(totalJFlied.getText().replace(',', '.')));
             this.dispose();
             parrentInputPanel.setVisible(true);
+        }else{
+            saveButton.doClick();
         }
     }
 
     /**
-     * Funkcja sprawdza, czy któryś z inputów nie jest pusty
+     * Funkcja sprawdza, czy ktorys z inputow nie jest pusty
      */
     private boolean isAnyInputBlank(){
         return fromLocationJFlied.getText().isBlank() && assortmentJFlied.getText().isBlank()

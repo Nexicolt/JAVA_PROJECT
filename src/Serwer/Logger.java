@@ -5,20 +5,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Klasa pomocnicza, odpowiedzialna za wpisywanie logów do pliku
+ * Klasa pomocnicza, odpowiedzialna za wpisywanie logow do pliku
  */
 public class Logger {
 
     private static final String logsFileName = "logs.log";
 
     /**
-     * Konstruktor tworzy plik, w którym będą przechowywane logi (jeśli nie istnieje)
+     * Konstruktor tworzy plik, w ktorym beda przechowywane logi (jesli nie istnieje)
       */
     Logger(){
         try {
             new File(Logger.logsFileName).createNewFile();
         } catch (IOException ioException) {
-            System.out.println("Błąd tworzenia pliku dla logów serwera. Korzystanie z klasy jest niemożliwe");
+            System.out.println("Blad tworzenia pliku dla logow serwera. Korzystanie z klasy jest niemozliwe");
         }
     }
 
@@ -36,8 +36,8 @@ public class Logger {
 
 
     /**
-     * Funkcja pomocnicza, zwracająca referencję doo strumienia pisania do pliku z logami.
-     * (Pozwala uniknąć powtarzania kodu)
+     * Funkcja pomocnicza, zwracajaca referencje doo strumienia pisania do pliku z logami.
+     * (Pozwala uniknać powtarzania kodu)
      */
     private BufferedWriter getOutputStreamToLogFile(){
         try{
@@ -48,7 +48,7 @@ public class Logger {
     }
 
     /**
-     * Funkcja pomocnicza, zwracająca aktualną datę jako tekst
+     * Funkcja pomocnicza, zwracajaca aktualna date jako tekst
      */
     private String getCurrentDateAsString(){
         Date date = new Date();

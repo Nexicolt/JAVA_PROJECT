@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Klasa odpowiedzialna za asynchroniczne sprawdzanie, czy socket komunikacyjny z serwerem nie został zamknięty
- * jeśli tak się stało, to zamyka bierzącą sesję i wywołuję funkcję inicjalizującą program i nowe połączenie
+ * Klasa odpowiedzialna za asynchroniczne sprawdzanie, czy socket komunikacyjny z serwerem nie zostal zamkniety
+ * jesli tak sie stalo, to zamyka bierzaca sesje i wywoluje funkcje inicjalizujaca program i nowe polaczenie
  */
 public class SocketChecker  extends Thread{
 
@@ -17,7 +17,7 @@ public class SocketChecker  extends Thread{
     private MainWindowWMS mainWindow;
 
     /**
-     * Konstruktor, inizjalizujący uchwyt do okna głównego i referncję do socketu komunikacyjnego
+     * Konstruktor, inizjalizujacy uchwyt do okna glownego i referncje do socketu komunikacyjnego
      */
     public SocketChecker(PrintWriter _streamToServer, BufferedReader _streamFromServer, MainWindowWMS _mainWindowHandler){
        mainWindow = _mainWindowHandler;
@@ -26,18 +26,18 @@ public class SocketChecker  extends Thread{
     }
 
     /**
-     * Metoda 'isConnected", wywoływana na sockecie komunikacyjny się nie sprawdza,
-     * bo zwraca false dopeiro, gdy to ja, jako klient rozłącze się z serwerem
+     * Metoda "isConnected", wywolywana na sockecie komunikacyjny sie nie sprawdza,
+     * bo zwraca false dopeiro, gdy to ja, jako klient rozlacze sie z serwerem
      *
-     * Metoda sprawdzania połączenia, to wysyłanie do serwera, co sekundę, komendy "heartbear",
-     * na która ten odpowiada "pik-pik". Jeśli strumień czytający zwróci NULL'a, to serwer zamknął połączenie
+     * Metoda sprawdzania polaczenia, to wysylanie do serwera, co sekunde, komendy "heartbear",
+     * na ktora ten odpowiada "pik-pik". Jesli strumien czytajacy zwroci NULL'a, to serwer zamknal polaczenie
      */
     @Override
     public void run() {
         while(true){
             try {
-                //Strumienie są zsynchronizowane, by nie zdarzyło się tak, że ten watek wyśle 'heartbeat' do serwera,
-                // a do strumienie czytającego podebnie sie główny wątek, po akurat będzie oczekiwał np. na stany magazynowe
+                //Strumienie sa zsynchronizowane, by nie zdarzylo sie tak, ze ten watek wysle 'heartbeat' do serwera,
+                // a do strumienie czytajacego podebnie sie glowny watek, po akurat bedzie oczekiwal np. na stany magazynowe
                 synchronized(streamToServer ){
                     streamToServer.println("heartbeat");
                     synchronized(streamFromServer){
@@ -47,10 +47,10 @@ public class SocketChecker  extends Thread{
                 Thread.sleep(1000);
 
             } catch (InterruptedException e) { }
-            //Wyjątek zwracany przez strumień czytający - oznacza zamknięcie komunikacji z serwerem
+            //Wyjatek zwracany przez strumien czytajacy - oznacza zamkniecie komunikacji z serwerem
             catch (IOException ioException) {
                 mainWindow.dispose();
-                JoptionPaneMessages.showErrorPopup("Błąd komunikacji z serwerem. Konieczna ponowna inizjalizacja aplikacji");
+                JoptionPaneMessages.showErrorPopup("Blad komunikacji z serwerem. Konieczna ponowna inizjalizacja aplikacji");
                 return;
 
             }

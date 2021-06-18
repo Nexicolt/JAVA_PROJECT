@@ -17,141 +17,141 @@ import java.util.Properties;
 import java.util.logging.Logger;
 
 /**
- * Klasa agregująca wszystkie działania związane z bazą danych Specjalnie wyekstrahowana do osobnego pliku, by
- * oddzielić działania na JSON'ie od wywołań zapytań/procedur SQL
+ * Klasa agregujaca wszystkie dzialania zwiazane z baza danych Specjalnie wyekstrahowana do osobnego pliku, by
+ * oddzielić dzialania na JSON'ie od wywolan zapytan/procedur SQL
  */
 public class SQLHelper {
 
     static Connection dbConnection = null;
 
-    ///Dane konfigracyjne do połączenia z MYSQL
+    ///Dane konfigracyjne do polaczenia z MYSQL
     static String DBHOST, DBUSER, DBPASSWORD, DBPORT, DATABASENAME;
 
     /**
-     * Funkcja inicjalizuje połączenie z baza danych i kończy działanie serwera, jesli to sie nie powiedzie
-     * (konieczne działanie, bo zmienna 'Connection" jest statyczna i inicjalizowana tylko raz)
+     * Funkcja inicjalizuje polaczenie z baza danych i konczy dzialanie serwera, jesli to sie nie powiedzie
+     * (konieczne dzialanie, bo zmienna 'Connection" jest statyczna i inicjalizowana tylko raz)
      */
     public static void InitSqlConnection(){
-        //Odczytuje parametry połączeniu z pliku i kończy pogram, jeśli napotka błąd (brak konieczności try-catch)
+        //Odczytuje parametry polaczeniu z pliku i konczy pogram, jesli napotka blad (brak koniecznosci try-catch)
         ReadConfiguration();
 
-        //Zainicjalizuj połączenie z bazą danych
+        //Zainicjalizuj polaczenie z baza danych
         try {
             dbConnection=DriverManager.getConnection("jdbc:mysql://"+DBHOST+":"+DBPORT+"/"+ DATABASENAME,
                     DBUSER, DBPASSWORD);
-            //potwierdznie połączenia z bazą danych
-            System.out.println("Połączono z bazą danych MySQL");
+            //potwierdznie polaczenia z baza danych
+            System.out.println("Polaczono z baza danych MySQL");
         }
         catch (SQLException throwables) {
-            ClientSession.logger.WriteLog("Błąd inicjalizacji połączenia z MYSQL -> " + throwables.getMessage(), "ERROR");
+            ClientSession.logger.WriteLog("Blad inicjalizacji polaczenia z MYSQL -> " + throwables.getMessage(), "ERROR");
             System.exit(1);
         }
 
     }
     /**
-     * Funkcja wywołuje procuderę, verfyikującą dane logowania użytkownika. W przypadku poprawnego przebiegu, czyli poprawnych danych zwrraca 'success'
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, verfyikujaca dane logowania uzytkownika. W przypadku poprawnego przebiegu, czyli poprawnych danych zwrraca 'success'
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static boolean VerifyLoginData(String login, String password) {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Hashuje hasło (bezpieczeństwo)
+            //Hashuje haslo (bezpieczenstwo)
             password = generateMD5(password);
 
             ResultSet queryResult = sqlStatement.executeQuery("SELECT VerifyLoginData('"+login+"', '"+password+"') AS Result");
 
-            //Funkcja SQL zwraca true, jeśli dane się zgadzają
+            //Funkcja SQL zwraca true, jesli dane sie zgadzaja
             queryResult.next();
             return queryResult.getBoolean("Result");
 
         } catch (SQLException throwables) {
-            ClientSession.logger.WriteLog("Błąd walidacji danych użytkownika -> " + throwables.getMessage(), "ERROR");
+            ClientSession.logger.WriteLog("Blad walidacji danych uzytkownika -> " + throwables.getMessage(), "ERROR");
             return false;
         }
     }
 
     /**
-     * Funkcja wywołuje procuderę, dodającą nowgo użytkownika. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, dodajaca nowgo uzytkownika. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static void AddNewUser(String login, String password) throws SQLException {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Hashuje hasło (bezpieczeństwo)
+            //Hashuje haslo (bezpieczenstwo)
             password = generateMD5(password);
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewUser('"+login+"', '"+password+"')");
 
         } catch (SQLException sqlException) {
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }
     }
 
     /**
-     * Funkcja wywołuje procuderę, dodającą nową lokalizację. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, dodajaca nowa lokalizacje. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static void AddNewLocation(String locationName) throws SQLException {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewLocation('"+locationName+"')");
 
         } catch (SQLException sqlException) {
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }
     }
 
     /**
-     * Funkcja wywołuje procuderę, wykonującą wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, wykonujaca wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static String DoInput(String getFrom,  ArrayList<AssortmentEntity> listOfAssortments) throws SQLException {
 
         Statement sqlStatement = null;
-        //Sam się zamknie
+        //Sam sie zamknie
         try {
             sqlStatement = dbConnection.createStatement();
 
-            //Rozpocznij procedurę, bo każdy element na liście asortymentó, to nowe wywołanie procedury SQL
-            //GDy coś się wysypie, to transakcja jest cofana
+            //Rozpocznij procedure, bo kazdy element na liscie asortymento, to nowe wywolanie procedury SQL
+            //GDy cos sie wysypie, to transakcja jest cofana
             sqlStatement.executeQuery("START TRANSACTION ");
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             for (var assortment: listOfAssortments) {
                 ResultSet queryResult = sqlStatement.executeQuery("CALL DoInput('"+getFrom+"', '"+assortment.getLocalization()+"', " +
                         "'"+assortment.getName()+"','"+assortment.getCount()+"')");
             }
-            //Zatwierdź transakcję, jeśli nie wyrzucił żadnwego wyjątku
+            //Zatwierdz transakcje, jesli nie wyrzucil zadnwego wyjatku
             sqlStatement.executeQuery("COMMIT");
 
             return "success";
 
         } catch (SQLException sqlException) {
 
-            //Cofnij transakcję, jeśli procedura wyrzuciła wyjątek
+            //Cofnij transakcje, jesli procedura wyrzucila wyjatek
             sqlStatement.executeQuery("ROLLBACK");
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }finally {
@@ -160,36 +160,36 @@ public class SQLHelper {
     }
 
     /**
-     * Funkcja wywołuje procuderę, wykonującą transfer. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, wykonujaca transfer. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static String DoTransfer(String fromLocation, String toLocation,String assortmentName, float quantity) throws SQLException {
 
         Statement sqlStatement = null;
-        //Sam się zamknie
+        //Sam sie zamknie
         try {
             sqlStatement = dbConnection.createStatement();
 
-            //Rozpocznij procedurę, bo każdy element na liście asortymentó, to nowe wywołanie procedury SQL
-            //GDy coś się wysypie, to transakcja jest cofana
+            //Rozpocznij procedure, bo kazdy element na liscie asortymento, to nowe wywolanie procedury SQL
+            //GDy cos sie wysypie, to transakcja jest cofana
             sqlStatement.executeQuery("START TRANSACTION ");
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
                 ResultSet queryResult = sqlStatement.executeQuery("CALL DoTransfer('"+fromLocation+"', '"+toLocation+"', " +
                         "'"+assortmentName+"','"+quantity+"')");
-            //Zatwierdź transakcję, jeśli nie wyrzucił żadnwego wyjątku
+            //Zatwierdz transakcje, jesli nie wyrzucil zadnwego wyjatku
             sqlStatement.executeQuery("COMMIT");
 
             return "success";
 
         } catch (SQLException sqlException) {
 
-            //Cofnij transakcję, jeśli procedura wyrzuciła wyjątek
+            //Cofnij transakcje, jesli procedura wyrzucila wyjatek
             sqlStatement.executeQuery("ROLLBACK");
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }finally {
@@ -197,59 +197,59 @@ public class SQLHelper {
         }
     }
     /**
-     * Funkcja wywołuje procuderę, dodającą nowy towar. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, dodajaca nowy towar. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static void AddNewAssortment(String assortmentName) throws SQLException {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewAssortment('"+assortmentName+"')");
 
         } catch (SQLException sqlException) {
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }
     }
 
     /**
-     * Funkcja wywołuje procuderę, dodającą nowego klienta. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, dodajaca nowego klienta. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static void AddNewContractor(String contractorName) throws SQLException {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             ResultSet queryResult = sqlStatement.executeQuery("CALL AddNewContractor('"+contractorName+"')");
 
         } catch (SQLException sqlException) {
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia kontrachenta -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia kontrachenta -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }
     }
 
     /**
-     * Funkcja wyciąga z bazy wszystkie stany magazynowe z odpowiednimi filtrami
-     * W przypadku napotkania  błędu, zwraca jego komunikat
+     * Funkcja wyciaga z bazy wszystkie stany magazynowe z odpowiednimi filtrami
+     * W przypadku napotkania  bledu, zwraca jego komunikat
      */
     public static String GetStockItem(String assortmentName, String locationName) throws SQLException {
 
-        //Sam się zamknie
+        //Sam sie zamknie
         try(Statement sqlStatement = dbConnection.createStatement()) {
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             ResultSet queryResult = sqlStatement.executeQuery("CALL GetStockItem('"+assortmentName+"', '"+locationName+"')");
 
             JSONArray stockItemReturnJSon = new JSONArray();
@@ -267,48 +267,48 @@ public class SQLHelper {
 
         } catch (SQLException sqlException) {
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }
     }
 
     /**
-     * Funkcja wywołuje procuderę, wykonującą wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
-     * dla napotkanego błędu zwracany jest wyjątek (status == 45000 to błąd obsłużony przez programistę)
+     * Funkcja wywoluje procudere, wykonujaca wydanie. W przypadku poprawnego przebiegu nic nie jest zwracane,
+     * dla napotkanego bledu zwracany jest wyjatek (status == 45000 to blad obsluzony przez programiste)
      */
     public static String DoOutput(String sendFrom, String sendTo, ArrayList<AssortmentEntity> listOfAssortments) throws SQLException {
 
         Statement sqlStatement = null;
-        //Sam się zamknie
+        //Sam sie zamknie
         try {
             sqlStatement = dbConnection.createStatement();
 
-            //Rozpocznij procedurę, bo każdy element na liście asortymentó, to nowe wywołanie procedury SQL
-            //GDy coś się wysypie, to transakcja jest cofana
+            //Rozpocznij procedure, bo kazdy element na liscie asortymento, to nowe wywolanie procedury SQL
+            //GDy cos sie wysypie, to transakcja jest cofana
             sqlStatement.executeQuery("START TRANSACTION ");
 
-            //Procedura SQL zwraca wyjątek, przy błędzie
+            //Procedura SQL zwraca wyjatek, przy bledzie
             for (var assortment: listOfAssortments) {
                 ResultSet queryResult = sqlStatement.executeQuery("CALL DoOutput('"+sendFrom+"', '"+sendTo+"', " +
                         "'"+assortment.getName()+"', '"+assortment.getLocalization()+"','"+assortment.getCount()+"')");
             }
 
-            //Zatwierdź transakcję, jeśli nie wyrzucił żadnwego wyjątku
+            //Zatwierdz transakcje, jesli nie wyrzucil zadnwego wyjatku
             sqlStatement.executeQuery("COMMIT");
 
             return "success";
 
         } catch (SQLException sqlException) {
 
-            //Cofnij transakcję, jeśli procedura wyrzuciła wyjątek
+            //Cofnij transakcje, jesli procedura wyrzucila wyjatek
             sqlStatement.executeQuery("ROLLBACK");
 
-            //Kod 45000, to obsłużony w funkcji błąd, więc nie wpisuj wtedy logów
+            //Kod 45000, to obsluzony w funkcji blad, wiec nie wpisuj wtedy logow
             if(!sqlException.getSQLState().equals("45000")){
-                ClientSession.logger.WriteLog("Błąd podczas tworzenia użytkownika -> " + sqlException.getMessage(), "ERROR");
+                ClientSession.logger.WriteLog("Blad podczas tworzenia uzytkownika -> " + sqlException.getMessage(), "ERROR");
             }
             throw sqlException;
         }finally {
@@ -317,13 +317,13 @@ public class SQLHelper {
     }
 
     /**
-     * Funkcja odczytuje parametry połączenia do bazy MYSQL (dane konfiguracyjne są w pliku)
+     * Funkcja odczytuje parametry polaczenia do bazy MYSQL (dane konfiguracyjne sa w pliku)
      */
     private static void ReadConfiguration(){
         //Odczytaj plik
         try(FileInputStream propertiesFile = new FileInputStream("SQLConfig.properties")){
 
-            //Utwórz klasę pomocniczą, która sparsuje dane z pliku
+            //Utworz klase pomocnicza, ktora sparsuje dane z pliku
             DBConfigParser properties = new DBConfigParser();
             properties.load(propertiesFile);
 
@@ -333,15 +333,15 @@ public class SQLHelper {
             DBPORT = properties.getProperty("port");
             DATABASENAME = properties.getProperty("database");
 
-            //Sprawdż, czy któraś wartośc nie jest NULL'em,
+            //Sprawdz, czy ktoras wartosc nie jest NULL'em,
             if(DBHOST == null || DBUSER == null || DBPASSWORD == null || DBPORT == null || DATABASENAME == null){
-                ClientSession.logger.WriteLog("Błędna struktura pliku konfiguracyjnego bazy danych. Brak jednego z 5 kluczowych parametrów",
+                ClientSession.logger.WriteLog("Bledna struktura pliku konfiguracyjnego bazy danych. Brak jednego z 5 kluczowych parametrow",
                         "ERROR");
                 System.exit(1);
             }
 
         }catch (IOException ioException){
-            ClientSession.logger.WriteLog("Błąd odczytu konfiguracji dla bazy danych -> " + ioException.getMessage(),
+            ClientSession.logger.WriteLog("Blad odczytu konfiguracji dla bazy danych -> " + ioException.getMessage(),
                                             "ERROR");
             System.exit(1);
         }

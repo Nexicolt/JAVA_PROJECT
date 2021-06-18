@@ -8,7 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Klasa reprezentuje okno, które wyskakuje po wciśnieciu przycisku dodawania nowego asrotymentu, na tworzonym wydaniu
+ * Klasa reprezentuje okno, ktore wyskakuje po wcisnieciu przycisku dodawania nowego asrotymentu, na tworzonym wydaniu
  */
 public class OutputView_AddAssortmentFrame extends JDialog implements ActionListener {
     private JFiledDialogStyle fromLocationJFlied, assortmentJFlied, totalJFlied;
@@ -17,7 +17,7 @@ public class OutputView_AddAssortmentFrame extends JDialog implements ActionList
     private final OutputView parrentOutputPanel;
 
     /**
-     * Konstruktor wyświetla okno i przechywuje referencję do okna rodzica
+     * Konstruktor wyswietla okno i przechywuje referencje do okna rodzica
      */
     public OutputView_AddAssortmentFrame(OutputView outputPanelHandler){
         parrentOutputPanel = outputPanelHandler;
@@ -39,18 +39,21 @@ public class OutputView_AddAssortmentFrame extends JDialog implements ActionList
         verticalJPanelBox.add(fromLocationLabel);
 
         fromLocationJFlied = new JFiledDialogStyle();
+        fromLocationJFlied.addActionListener(this);
         verticalJPanelBox.add(fromLocationJFlied);
 
         JLabelStyle assortmentLabel = new JLabelStyle("Assortment");
         verticalJPanelBox.add(assortmentLabel);
 
         assortmentJFlied = new JFiledDialogStyle();
+        assortmentJFlied.addActionListener(this);
         verticalJPanelBox.add(assortmentJFlied);
 
-        JLabelStyle totalLabel = new JLabelStyle("Ilość");
+        JLabelStyle totalLabel = new JLabelStyle("Ilosć");
         verticalJPanelBox.add(totalLabel);
 
         totalJFlied = new JFiledDialogStyle();
+        totalJFlied.addActionListener(this);
         verticalJPanelBox.add(totalJFlied);
 
         JPanel buttonGroupPanel = new JPanel();
@@ -79,22 +82,24 @@ public class OutputView_AddAssortmentFrame extends JDialog implements ActionList
             parrentOutputPanel.setVisible(true);
             this.dispose();
         }
-        //Dla przycisku zapisz -> wywołaj metodę dodania newgo asortyemnu, na obiekcie JPanelu rodzica
+        //Dla przycisku zapisz -> wywolaj metode dodania newgo asortyemnu, na obiekcie JPanelu rodzica
         else if(source.equals(saveButton)){
-            //Sprawdź inputy
+            //Sprawdz inputy
             if(isAnyInputBlank()){
-                JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
+                JoptionPaneMessages.showErrorPopup("Wszystkie pola musza być wypelnione");
                 return;
             }
             parrentOutputPanel.AddNewAssortment(assortmentJFlied.getText(),
                                         fromLocationJFlied.getText(), Float.parseFloat(totalJFlied.getText().replace(',', '.')));
             this.dispose();
             parrentOutputPanel.setVisible(true);
+        }else{
+            saveButton.doClick();
         }
     }
 
     /**
-     * Funkcja sprawdza, czy któryś z inputów nie jest pusty
+     * Funkcja sprawdza, czy ktorys z inputow nie jest pusty
      */
     private boolean isAnyInputBlank(){
         return fromLocationJFlied.getText().isBlank() && assortmentJFlied.getText().isBlank()

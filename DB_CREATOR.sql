@@ -50,40 +50,40 @@ create or replace table users
 );
 create or replace  procedure AddNewContractor(IN _contractorName varchar(50))
 BEGIN
-    #     Sprawdź, czy taki użytownik już nie istnieje
+    #     Sprawdz, czy taki uzytownik juz nie istnieje
     SET @ContractorExists = (SELECT COUNT(name) FROM assortment WHERE name=_contractorName);
     if(@ContractorExists) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Asortyment o podanej nazwie już istnieje';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Asortyment o podanej nazwie juz istnieje';
     END IF;
     INSERT INTO contracotrs SET name=_contractorName;
 end;
 
 create or replace  procedure AddNewAssortment(IN _assortmentName varchar(50))
 BEGIN
-    #     Sprawdź, czy taki użytownik już nie istnieje
+    #     Sprawdz, czy taki uzytownik juz nie istnieje
     SET @assortmentExists = (SELECT COUNT(name) FROM assortment WHERE name=_assortmentName);
     if(@assortmentExists) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Asortyment o podanej nazwie już istnieje';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Asortyment o podanej nazwie juz istnieje';
     END IF;
     INSERT INTO assortment SET name=_assortmentName;
 end;
 
 create or replace  procedure AddNewLocation(IN _locationName varchar(50))
 BEGIN
-    #     Sprawdź, czy taki użytownik już nie istnieje
+    #     Sprawdz, czy taki uzytownik juz nie istnieje
     SET @locationExists = (SELECT COUNT(name) FROM location WHERE name=_locationName);
     if(@locationExists) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Lokalizacja o podanej nazwie już istnieje';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT =  'Lokalizacja o podanej nazwie juz istnieje';
     END IF;
     INSERT INTO location SET name=_locationName;
 end;
 
 create or replace procedure AddNewUser(IN _login varchar(100), IN _password varchar(100))
 BEGIN
-    #     Sprawdź, czy taki użytownik już nie istnieje
+    #     Sprawdz, czy taki uzytownik juz nie istnieje
     SET @userExsists = (SELECT COUNT(login) FROM users WHERE login=_login);
     if(@userExsists) THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Użytkownik o podanym loginie już istnieje';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Uzytkownik o podanym loginie juz istnieje';
     END IF;
     INSERT INTO users SET login = _login, password = _password;
 end;
@@ -122,7 +122,7 @@ BEGIN
     end if;
 
     if(@AssortmentLevel < _assortmentCount)THEN
-        SEt @msg = CONCAT('Towar o nazwie ', _assortmentName, ' z lokalizacji ', _locationName, ' ma zbyt małą ilośc stanu na magazynie. Konieczne przyjęcie');
+        SEt @msg = CONCAT('Towar o nazwie ', _assortmentName, ' z lokalizacji ', _locationName, ' ma zbyt mala ilosc stanu na magazynie. Konieczne przyjecie');
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg ;
     end if;
 
@@ -160,7 +160,7 @@ BEGIN
     end if;
 
     if(@AssortmentLevel < _assortmentCount)THEN
-        SEt @msg = CONCAT('Towar o nazwie ', _assortmentName, ' z lokalizacji ', _fromLocation, ' ma zbyt małą ilośc stanu na magazynie. Konieczne przyjęcie');
+        SEt @msg = CONCAT('Towar o nazwie ', _assortmentName, ' z lokalizacji ', _fromLocation, ' ma zbyt mala ilosc stanu na magazynie. Konieczne przyjecie');
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = @msg ;
     end if;
 

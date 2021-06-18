@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Klasa reperezntuająca GUI okna z wydaniami. Posiada implementację komunikacji z serwerem
+ * Klasa reperezntuajaca GUI okna z wydaniami. Posiada implementacje komunikacji z serwerem
  */
 public class OutputView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
@@ -27,7 +27,7 @@ public class OutputView extends JPanel implements ActionListener {
     JPanel mainContainer;
 
     /**
-     * Konstruktor inicjalizuje referencje do głownego JPanel'u, okna WMS'a
+     * Konstruktor inicjalizuje referencje do glownego JPanel'u, okna WMS'a
      */
     public OutputView(MainWindowWMS mainWindowWMS, JPanel mainContainer){
         this.mainWindowWMS = mainWindowWMS;
@@ -88,9 +88,9 @@ public class OutputView extends JPanel implements ActionListener {
         JPanel jPanelOption3 = new JPanel();
 
         outputList = new JList();
-        //Dane w liście
+        //Dane w liscie
         outputList.setListData(listOfAssortments.toArray());
-        //Sposób reprezentacji danych, na podstawie nadpisanej klasy
+        //Sposob reprezentacji danych, na podstawie nadpisanej klasy
         outputList.setCellRenderer(new AssortmentEntityCellView());
 
         outputList.setPreferredSize(new Dimension(500, 300));
@@ -111,7 +111,7 @@ public class OutputView extends JPanel implements ActionListener {
         saveButton.addActionListener(this);
         buttonGroupPanel.add(saveButton);
 
-        //Łączenie calosci
+        //laczenie calosci
         jPanelOption1.add(verticalSetionBox);
         verticalMainBox.add(jPanelOption1);
         verticalMainBox.add(jPanelOption2);
@@ -126,10 +126,10 @@ public class OutputView extends JPanel implements ActionListener {
         Object source = e.getSource();
         //Akcja dla przycisku "Rezygnuj"
         if (source.equals(closeButton)) {
-            //Sprawdź inputy, czy któryś nie jest wypełniony
+            //Sprawdz inputy, czy ktorys nie jest wypelniony
             if (isAnyInputField()) {
                 int choice = JOptionPane.showConfirmDialog(null,
-                        "Wprowadzone dane nie zostaną zapisane. Czy na pewno chcesz wyjść?",
+                        "Wprowadzone dane nie zostana zapisane. Czy na pewno chcesz wyjsć?",
                         "Uwaga!",
                         JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
@@ -142,7 +142,7 @@ public class OutputView extends JPanel implements ActionListener {
             }
         //Przycisk edycji asortymentu z listy
         } else if (source.equals(editButton)) {
-            //Sprawdź, czy zaznaczono jakiś rekord na liście
+            //Sprawdz, czy zaznaczono jakis rekord na liscie
             if (outputList.getSelectedIndex() < 0) {
                 JoptionPaneMessages.showErrorPopup("Nie wskazano rekordu z listy");
                 return;
@@ -154,29 +154,29 @@ public class OutputView extends JPanel implements ActionListener {
 
         //Przycisk usuwania asortymentu z listy
         } else if (source.equals(removeButton)) {
-            //Sprawdź, czy zaznaczono jakiś rekord na liście
+            //Sprawdz, czy zaznaczono jakis rekord na liscie
             if (outputList.getSelectedIndex() < 0) {
                 JoptionPaneMessages.showErrorPopup("Nie wskazano rekordu z listy");
                 return;
             }
-            //Usuń asortyment i aktualizuj JList
+            //Usun asortyment i aktualizuj JList
             listOfAssortments.remove(outputList.getSelectedIndex());
             outputList.setListData(listOfAssortments.toArray());
 
         //Przycisk zapisu *wykonania wydania)
         } else if (source.equals(saveButton)) {
-            //Sprawdź, czy inputy nie są puste
+            //Sprawdz, czy inputy nie sa puste
             if(fromFiled.getText().isBlank() || toFiled.getText().isBlank()){
-                JoptionPaneMessages.showErrorPopup("Oba pola z dostawcą i odbiorcą muszą być wypełnione");
+                JoptionPaneMessages.showErrorPopup("Oba pola z dostawca i odbiorca musza być wypelnione");
                 return;
             }
 
-            //Sprawdź, czy lista ma chociaż jeden towar
+            //Sprawdz, czy lista ma chociaz jeden towar
            if(listOfAssortments.size() == 0){
-               JoptionPaneMessages.showErrorPopup("Wskaż conajmniej jeden asortyment do wydania");
+               JoptionPaneMessages.showErrorPopup("Wskaz conajmniej jeden asortyment do wydania");
                return;
            }
-            //Wywołaj komendę, wysyłającą request sdo serwera
+            //Wywolaj komende, wysylajaca request sdo serwera
             doOutputCommand();
 
             //Przycisk dodania nowego asortymentu
@@ -188,11 +188,11 @@ public class OutputView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja tworzy JSON'a i odpytuje server, o wydanie określonych przez użutkowmnika towarów,
-     * na określonych lokalizacjach
+     * Funkcja tworzy JSON'a i odpytuje server, o wydanie okreslonych przez uzutkowmnika towarow,
+     * na okreslonych lokalizacjach
      */
     private void doOutputCommand() {
-        //Główny JSOn, wysyłany do serwera
+        //Glowny JSOn, wysylany do serwera
         JSONObject outputCommandJSON = new JSONObject();
         outputCommandJSON.put("action", "do_output");
 
@@ -200,10 +200,10 @@ public class OutputView extends JPanel implements ActionListener {
         data.put("from", fromFiled.getText().trim());
         data.put("to", toFiled.getText().trim());
 
-        //Tablica, która będzie zawierała asortymenty do wydania
+        //Tablica, ktora bedzie zawierala asortymenty do wydania
         JSONArray assortmentsData = new JSONArray();
 
-        //Pętla dodająca wszystkie asortymenty z listy, do JSON'a
+        //Petla dodajaca wszystkie asortymenty z listy, do JSON'a
         for (AssortmentEntity tmpEntity: listOfAssortments){
             JSONObject tmpJSOnAssortment = new JSONObject();
             tmpJSOnAssortment.put("assortment_name", tmpEntity.getName());
@@ -216,24 +216,24 @@ public class OutputView extends JPanel implements ActionListener {
         data.put("assortments_data", assortmentsData);
         outputCommandJSON.put("data", data);
 
-        //Wyślij dane do serwera
+        //Wyslij dane do serwera
         mainWindowWMS.GetStreamToServer().println(outputCommandJSON);
 
-        //Czekaj na odpowiedź od serwera
+        //Czekaj na odpowiedz od serwera
         try {
             while (true) {
                 String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                 if (serverResponse != null) {
-                    //Sparsuj odpowiedź do typu JSON
+                    //Sparsuj odpowiedz do typu JSON
                     JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                    //Jeśli odesłał success, to wyświetl komunikat i zamknij okno
+                    //Jesli odeslal success, to wyswietl komunikat i zamknij okno
                     if (serverResponseJSON.getString("status").equals("success")) {
-                        JoptionPaneMessages.showSuccessPopup("Wydanie zakończone poprawnie");
+                        JoptionPaneMessages.showSuccessPopup("Wydanie zakonczone poprawnie");
                        setVisible(false);
                        mainContainer.setVisible(true);
                     } else {
-                        //Jeśli nie odesłał success, to wyświetl zwrócony komunikat błędu
+                        //Jesli nie odeslal success, to wyswietl zwrocony komunikat bledu
                         String erroMessage = serverResponseJSON.getString("message");
                         JoptionPaneMessages.showErrorPopup(erroMessage);
                     }
@@ -246,8 +246,8 @@ public class OutputView extends JPanel implements ActionListener {
 
 
     /**
-     * Publiczna funkcja, wywoływana z okna dialogowego z wprowadzaniem nowego towaru
-     * Dodaje nowy towar do JList i odświeża ją
+     * Publiczna funkcja, wywolywana z okna dialogowego z wprowadzaniem nowego towaru
+     * Dodaje nowy towar do JList i odswieza ja
      */
     public void AddNewAssortment(String assortmentName, String fromLokalization, float count) {
         listOfAssortments.add(new AssortmentEntity(assortmentName, fromLokalization, count));
@@ -255,8 +255,8 @@ public class OutputView extends JPanel implements ActionListener {
     }
 
     /**
-     * Publiczna funkcja, wywoływana z okna dialogowego z wprowadzaniem nowego towaru
-     * Dodaje nowy towar do JList i odświeża ją
+     * Publiczna funkcja, wywolywana z okna dialogowego z wprowadzaniem nowego towaru
+     * Dodaje nowy towar do JList i odswieza ja
      */
     public void EditAssortent(String assortmentName, String fromLokalization, float count) {
         listOfAssortments.set(outputList.getSelectedIndex(), new AssortmentEntity(assortmentName, fromLokalization, count));
@@ -264,7 +264,7 @@ public class OutputView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja sprawdza, czy którekolwiek pole jest wypełnione
+     * Funkcja sprawdza, czy ktorekolwiek pole jest wypelnione
      */
     private boolean isAnyInputField() {
         return !fromFiled.getText().isBlank() || !toFiled.getText().isBlank() || outputList.getModel().getSize() == 0;

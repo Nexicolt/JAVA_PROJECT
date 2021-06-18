@@ -17,7 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Klasa reprezentuje okno i logikę biznesową  dla panelu logowania
+ * Klasa reprezentuje okno i logike biznesowa  dla panelu logowania
  */
 public class LoginForm extends AbstractJFrame implements ActionListener {
 
@@ -26,7 +26,7 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
     JButton loginButton;
 
     /**
-     * Konstruktor inizjalizuje tytuł okna i przechwytuje refrencję do socketu komunikacji i strumieni
+     * Konstruktor inizjalizuje tytul okna i przechwytuje refrencje do socketu komunikacji i strumieni
      */
     LoginForm(String windowName, Socket _commSocket, PrintWriter _streamToServer, BufferedReader _streamFromServer) {
         super(windowName, _commSocket, _streamToServer, _streamFromServer);
@@ -34,7 +34,7 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
     }
 
     /**
-     * Funkcja inicjalizująca layout i pokazująca okno z wpisaniem danych logowania
+     * Funkcja inicjalizujaca layout i pokazujaca okno z wpisaniem danych logowania
      */
     public void init() {
 
@@ -43,7 +43,7 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         ///////////////////////////
-        //// KONTROLKI WYGLĄDU ////
+        //// KONTROLKI WYGLaDU ////
         ///////////////////////////
 
         setLayout(new FlowLayout());
@@ -59,12 +59,12 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
         loginInputPanel.add(loginInputLabel);
         loginInputPanel.add(loginInputField);
 
-        //Input do wpisania hasła
+        //Input do wpisania hasla
         passwordInputField = new JPasswordField(25);
         passwordInputField.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         passwordInputField.addActionListener(this);
 
-        JLabel passwordInputLabel = new JLabel("Hasło:");
+        JLabel passwordInputLabel = new JLabel("Haslo:");
 
         JPanel passwordInputPanel = new JPanel();
         passwordInputPanel.add(passwordInputLabel);
@@ -80,21 +80,22 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
         add(loginButton);
 
         setVisible(true);
+        setLocationRelativeTo(null);
     }
 
     /**
-     * Nasłuchiwanie wciśnięcia przycisku
+     * Nasluchiwanie wcisniecia przycisku
      */
     @Override
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == loginButton) {
-            //Sprawdź, czy inputy nie są puste
+            //Sprawdz, czy inputy nie sa puste
             if (loginInputField.getText().isBlank() || passwordInputField.getText().isBlank()) {
-                JoptionPaneMessages.showErrorPopup("Oba pola muszą być wypełnione");
+                JoptionPaneMessages.showErrorPopup("Oba pola musza być wypelnione");
                 return;
             }
-            //Wyślij zapytanie do serwera z danymi logowania (zwróci TRUE dla poprawnych danych)
+            //Wyslij zapytanie do serwera z danymi logowania (zwroci TRUE dla poprawnych danych)
             if (sendLoginData()) {
                 MainWindowWMS mainWidnow = new MainWindowWMS("Warehouse Management System",
                                     communicationSocket, streamToServer, streamFromServer, loginInputField.getText() );
@@ -102,16 +103,16 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
                 dispose();
                 new SocketChecker(streamToServer, streamFromServer, mainWidnow).start();
             } else {
-                JoptionPaneMessages.showErrorPopup("Błędne dane logowania");
+                JoptionPaneMessages.showErrorPopup("Bledne dane logowania");
             }
         }else{
             loginButton.doClick();
         }
     }
     /**
-     * Wysyła do serwera zapytanie, o poprawność danych logowania, wpisanych przez użytkownika
+     * Wysyla do serwera zapytanie, o poprawnosć danych logowania, wpisanych przez uzytkownika
      * <p>
-     * Zwraca true, jeśli serwer odpowie 'OK'
+     * Zwraca true, jesli serwer odpowie 'OK'
      */
     private boolean sendLoginData() {
         JSONObject mainJsonMessage = new JSONObject();
@@ -123,7 +124,7 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
         mainJsonMessage.put("action", "login");
         mainJsonMessage.put("data", jsonData);
 
-        //Wysyłka JSON'a do serwera, z danymi logowania
+        //Wysylka JSON'a do serwera, z danymi logowania
         streamToServer.println(mainJsonMessage);
 
         //Funckja zwraca true, przy poprawnych danych oraz false, przy niepoprawnych
@@ -132,16 +133,16 @@ public class LoginForm extends AbstractJFrame implements ActionListener {
     }
 
     /**
-     * Funkcja oczekuje na odpowiedź od serwera, w kwestii danych logowania
-     * Nie jest osobnym wątkiem, bo odebranie danych musi sie odbyć liniowo z ich wysłaniem. Gdyby zrobić odbieranie danych asonchroniczne,
-     * to klient mógłby zapchać serwer ciągłym wysyłaniem zapytań o weryfikację danych logowania
+     * Funkcja oczekuje na odpowiedz od serwera, w kwestii danych logowania
+     * Nie jest osobnym watkiem, bo odebranie danych musi sie odbyć liniowo z ich wyslaniem. Gdyby zrobić odbieranie danych asonchroniczne,
+     * to klient moglby zapchać serwer ciaglym wysylaniem zapytan o weryfikacje danych logowania
      */
     private boolean waitForServerResponse() {
         try {
             while (true) {
                 String serverResponse = streamFromServer.readLine();
                 if (serverResponse != null) {
-                    //Serwer odpowiada 'OK', jeśli dane logowania są poprawne
+                    //Serwer odpowiada 'OK', jesli dane logowania sa poprawne
                     if (serverResponse.equals("ok")) return true;
                     else return false;
                 }

@@ -1,7 +1,7 @@
 package WMS.Entity;
 
 /**
- * Reprezentacja obiektu, dla stanu magayznowego, wykorzystywana do towrzenia nowych obiektów list dla stanów magazynowych, wydań i przyjęć
+ * Reprezentacja obiektu, dla stanu magayznowego, wykorzystywana do towrzenia nowych obiektow list dla stanow magazynowych, wydan i przyjeć
  */
 public class AssortmentEntity {
     private String Name;
@@ -9,28 +9,28 @@ public class AssortmentEntity {
     private float count;
 
     /**
-     * Zwraca nazwę asortymentu
+     * Zwraca nazwe asortymentu
      */
     public String getName() {
         return Name;
     }
 
     /**
-     * Zwraca nazwę lokalizacji
+     * Zwraca nazwe lokalizacji
      */
     public String getLocalization() {
         return Localization;
     }
 
     /**
-     * Zwraca ilośc asortymentu
+     * Zwraca ilosc asortymentu
      */
     public float getCount() {
         return count;
     }
 
     /**
-     * Konstrutkro, inicjalizujący pola
+     * Konstrutkro, inicjalizujacy pola
      */
     public AssortmentEntity(String name, String localization, float count) {
         Name = name;

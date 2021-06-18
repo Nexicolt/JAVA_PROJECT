@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Klasa reprezentująca styl dla etykiet. Wszystkie tego typu kontorlki sa jednakowe w aplikacji, więc zosaatła utworozna klasa,
- * która tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w dużym stopniu)
+ * Klasa reprezentujaca styl dla etykiet. Wszystkie tego typu kontorlki sa jednakowe w aplikacji, wiec zosaatla utworozna klasa,
+ * ktora tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w duzym stopniu)
  */
 public class JLabelStyle extends JLabel {
     public JLabelStyle(String name){

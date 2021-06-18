@@ -4,8 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Klasa reprezentująca styl przycisków w menu głównym (duże przyciski). Wszystkie tego typu kontorlki sa jednakowe w aplikacji, więc zosaatła utworozna klasa,
- * która tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w dużym stopniu)
+ * Klasa reprezentujaca styl przyciskow w menu glownym (duze przyciski). Wszystkie tego typu kontorlki sa jednakowe w aplikacji, wiec zosaatla utworozna klasa,
+ * ktora tworzy idnetyczne obiektu i tym samym unikamy powtarzania kodu (w duzym stopniu)
  */
 
 public class JButtonMainStyle extends JButton {

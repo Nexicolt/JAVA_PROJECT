@@ -9,34 +9,34 @@ import java.net.Socket;
 import static Style.JoptionPaneMessages.showErrorPopup;
 
 /**
- * Klasa rozpoczynająca inicjalizację modułu klienta
+ * Klasa rozpoczynajaca inicjalizacje modulu klienta
  */
 public class WMS{
     public static int connectionPort = 14432;
     public static String connectionAddress = "Localhost";
 
-    //Dane do połączenia z serwerem
+    //Dane do polaczenia z serwerem
     private static Socket communicationSocket;
     private static PrintWriter streamToServer;
     private static BufferedReader streamFromServer;
 
     /**
-     * Główna funkcja, inizjalizująca aplikację klienta
+     * Glowna funkcja, inizjalizujaca aplikacje klienta
      */
     public static void main(String[] args)  {
-        //Utwórz socket połączeniowy z serwerem i przekazuj go przez refrencję, by uniknąć redundancji
-        // i tworzenia socketu w każdej klasie, pochodnej od JFrame
+        //Utworz socket polaczeniowy z serwerem i przekazuj go przez refrencje, by uniknać redundancji
+        // i tworzenia socketu w kazdej klasie, pochodnej od JFrame
         try {
             communicationSocket = new Socket(connectionAddress, connectionPort);
             streamToServer = new PrintWriter(communicationSocket.getOutputStream(), true);
             streamFromServer = new BufferedReader(new InputStreamReader(communicationSocket.getInputStream()));
         } catch (IOException e) {
-            showErrorPopup("Błąd nawiązywania połączenia z serwerem!");
+            showErrorPopup("Blad nawiazywania polaczenia z serwerem!");
             System.exit(0);
         }
 
         new LoginForm("Logowanie", communicationSocket, streamToServer, streamFromServer).init();
-        //new MainWindowWMS("Okno głowne", communicationSocket, streamToServer, streamFromServer).init();
+        //new MainWindowWMS("Okno glowne", communicationSocket, streamToServer, streamFromServer).init();
 
     }
 }

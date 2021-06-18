@@ -15,14 +15,14 @@ import java.io.IOException;
  */
 public class TransferView extends JPanel implements ActionListener {
 
-    //Uchwyty do inputów i przycisków
+    //Uchwyty do inputow i przyciskow
     JFliedTextStyle fromLocationJTextField, assortmentJTextField, tolocationJTextField, totalJTextField;
     JButtonOptionStyle saveButton, closeButton;
     MainWindowWMS mainWindowWMS;
     JPanel mainContainer;
 
     /**
-     * Konstruktor inicjalizuje referencje do głownego JPanel'u, okna WMS'a
+     * Konstruktor inicjalizuje referencje do glownego JPanel'u, okna WMS'a
      */
     public TransferView(MainWindowWMS mainWindowWMS, JPanel mainContainer){
         this.mainWindowWMS = mainWindowWMS;
@@ -65,7 +65,7 @@ public class TransferView extends JPanel implements ActionListener {
 
         verticalSetionBox.add(Box.createVerticalStrut(20));
 
-        JLabelStyle totalLabel = new JLabelStyle("Ilość:");
+        JLabelStyle totalLabel = new JLabelStyle("Ilosć:");
         verticalSetionBox.add(totalLabel);
         totalJTextField = new JFliedTextStyle();
         verticalSetionBox.add(totalJTextField);
@@ -99,10 +99,10 @@ public class TransferView extends JPanel implements ActionListener {
         Object source = e.getSource();
 
         if(source == closeButton) {
-            //Sprawdź buttony i wyświetl komunikat ostrzegawczy, jeśli któryś jest wypełniony
+            //Sprawdz buttony i wyswietl komunikat ostrzegawczy, jesli ktorys jest wypelniony
             if (isAnyInputField()) {
                 int choice = JOptionPane.showConfirmDialog(null,
-                        "Wprowadzone dane nie zostaną zapisane. Czy na pewno chcesz wyjść?",
+                        "Wprowadzone dane nie zostana zapisane. Czy na pewno chcesz wyjsć?",
                         "Uwaga!",
                         JOptionPane.YES_NO_OPTION);
                 if(choice == JOptionPane.YES_OPTION) {
@@ -115,10 +115,10 @@ public class TransferView extends JPanel implements ActionListener {
             mainContainer.setVisible(true);
         }
         else if(source == saveButton){
-            //Sprawdź inputy, czy któryś nie jest pusty
+            //Sprawdz inputy, czy ktorys nie jest pusty
             ///fromLocationJTextField, assortmentJTextField, tolocationJTextField, totalJTextField;
             if(isAnyInputBlank()){
-                JoptionPaneMessages.showErrorPopup("Wszystkie pola muszą być wypełnione");
+                JoptionPaneMessages.showErrorPopup("Wszystkie pola musza być wypelnione");
                 return;
             }
             doTransferCommand();
@@ -126,7 +126,7 @@ public class TransferView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja sprawdza, czy któryś z inputów nie jest pusty
+     * Funkcja sprawdza, czy ktorys z inputow nie jest pusty
      */
     private boolean isAnyInputBlank(){
         return fromLocationJTextField.getText().isBlank() || assortmentJTextField.getText().isBlank() ||
@@ -134,7 +134,7 @@ public class TransferView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja sprawdza, czy którykolwiek z inputów jest wypełniony
+     * Funkcja sprawdza, czy ktorykolwiek z inputow jest wypelniony
      */
     private boolean isAnyInputField(){
         return !totalJTextField.getText().isBlank() || !assortmentJTextField.getText().isBlank()
@@ -142,10 +142,10 @@ public class TransferView extends JPanel implements ActionListener {
     }
 
     /**
-     * Głowna funkcja, odpowiedzialna z wykonanaie transferu. Waliduje wprowadzone dane, wysyła request do serwera i wyświetla otrzymaną odpowiedź
+     * Glowna funkcja, odpowiedzialna z wykonanaie transferu. Waliduje wprowadzone dane, wysyla request do serwera i wyswietla otrzymana odpowiedz
      */
     private void doTransferCommand() {
-        //Główny JSOn, wysyłany do serwera
+        //Glowny JSOn, wysylany do serwera
         JSONObject transferCommandJSON = new JSONObject();
         transferCommandJSON.put("action", "transfer_operation");
 
@@ -154,24 +154,24 @@ public class TransferView extends JPanel implements ActionListener {
         transferCommandJSON.put("Asortment", assortmentJTextField.getText().trim());
         transferCommandJSON.put("AssortmentQuantity", totalJTextField.getText().trim());
 
-        //Wyślij dane do serwera
+        //Wyslij dane do serwera
         mainWindowWMS.GetStreamToServer().println(transferCommandJSON);
 
-        //Czekaj na odpowiedź od serwera
+        //Czekaj na odpowiedz od serwera
         try {
             while (true) {
                 String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                 if (serverResponse != null) {
-                    //Sparsuj odpowiedź do typu JSON
+                    //Sparsuj odpowiedz do typu JSON
                     JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                    //Jeśli odesłał success, to wyświetl komunikat i zamknij okno
+                    //Jesli odeslal success, to wyswietl komunikat i zamknij okno
                     if (serverResponseJSON.getString("status").equals("success")) {
-                        JoptionPaneMessages.showSuccessPopup("Transfer zakończony poprawnie");
+                        JoptionPaneMessages.showSuccessPopup("Transfer zakonczony poprawnie");
                         setVisible(false);
                         mainContainer.setVisible(true);
                     } else {
-                        //Jeśli nie odesłał success, to wyświetl zwrócony komunikat błędu
+                        //Jesli nie odeslal success, to wyswietl zwrocony komunikat bledu
                         String erroMessage = serverResponseJSON.getString("message");
                         JoptionPaneMessages.showErrorPopup(erroMessage);
                     }

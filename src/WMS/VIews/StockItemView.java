@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- *  Klasa reperezntuje widok stanów magazynowych i obsługuje interakcje użytkownika, związane z filtrowaniem wyników
+ *  Klasa reperezntuje widok stanow magazynowych i obsluguje interakcje uzytkownika, zwiazane z filtrowaniem wynikow
  */
 public class StockItemView extends JPanel implements ActionListener {
     private MainWindowWMS mainWindowWMS;
@@ -30,7 +30,7 @@ public class StockItemView extends JPanel implements ActionListener {
     JPanel mainContainer;
 
     /**
-     * Konstruktor inicjalizuje referencje do głownego JPanel'u, okna WMS'a
+     * Konstruktor inicjalizuje referencje do glownego JPanel'u, okna WMS'a
      */
     public StockItemView(MainWindowWMS mainWindowWMS, JPanel mainContainer) {
         this.mainWindowWMS = mainWindowWMS;
@@ -96,12 +96,12 @@ public class StockItemView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja odpytuje serwer, o listę wszystkich dostępnych asortymentów, a nastepnie ją sortuje,
-     * jeśli został ustawiony jakiś filtr
+     * Funkcja odpytuje serwer, o liste wszystkich dostepnych asortymentow, a nastepnie ja sortuje,
+     * jesli zostal ustawiony jakis filtr
      */
     private void LoadStockItemList() {
 
-        //Główny request do servera
+        //Glowny request do servera
         JSONObject requestToServer = new JSONObject();
         requestToServer.put("action", "get_stock_item");
 
@@ -112,22 +112,22 @@ public class StockItemView extends JPanel implements ActionListener {
 
         requestToServer.put("filters", filtersJSN);
 
-        //Wysyłka JSON'a do serwera, z danymi nowej lokalizacji
+        //Wysylka JSON'a do serwera, z danymi nowej lokalizacji
         mainWindowWMS.GetStreamToServer().println(requestToServer);
 
-        //Czekaj na odpowiedź od serwera
+        //Czekaj na odpowiedz od serwera
         try {
             while (true) {
                 String serverResponse = mainWindowWMS.GetStreamFromServer().readLine();
                 if (serverResponse != null) {
-                    //Sparsuj odpowiedź do typu JSON
+                    //Sparsuj odpowiedz do typu JSON
                     JSONObject serverResponseJSON = new JSONObject(serverResponse);
 
-                    //Jeśli odesłał success, to wywołaj funkcję aktualizującą listę
+                    //Jesli odeslal success, to wywolaj funkcje aktualizujaca liste
                     if (serverResponseJSON.getString("status").equals("success")) {
                         UpdateJlist(serverResponseJSON.getJSONArray("stock_items"));
                     } else {
-                        //Jeśli nie odesłał ok, to wyświetl zwrócony komunikat błędu
+                        //Jesli nie odeslal ok, to wyswietl zwrocony komunikat bledu
                         String erroMessage = serverResponseJSON.getString("message");
                         JoptionPaneMessages.showErrorPopup(erroMessage);
                     }
@@ -139,26 +139,26 @@ public class StockItemView extends JPanel implements ActionListener {
     }
 
     /**
-     * Funkcja aktualizuje listę, na podstawie otrzymanej tablicy
+     * Funkcja aktualizuje liste, na podstawie otrzymanej tablicy
      */
     private void UpdateJlist(JSONArray stockItemArray) {
-        //Wyczyść listę
+        //Wyczysć liste
         stockItemList.removeAll();
-        //Wyzeruj kolekcje, która stanowi dane dla listy
+        //Wyzeruj kolekcje, ktora stanowi dane dla listy
         listOfAssortments = new ArrayList<>();
 
-        //Iteruj po otrzymanej od serwera tablicy stockItemów
+        //Iteruj po otrzymanej od serwera tablicy stockItemow
         for (Object tmpObject : stockItemArray) {
-            //Konwertuj do JSONObject (nie wiem czemu nie można zadeklarować typu JSONObject w pętli)
+            //Konwertuj do JSONObject (nie wiem czemu nie mozna zadeklarować typu JSONObject w petli)
             JSONObject obj = (JSONObject) tmpObject;
 
-            //Dodaj do listy z danymi, nowy obiekt z odczytanymi wartościami
+            //Dodaj do listy z danymi, nowy obiekt z odczytanymi wartosciami
             listOfAssortments.add(new AssortmentEntity(obj.getString("assortment_name"),
                     obj.getString("location_name"),
                     Float.parseFloat(obj.getString("stock_level").replace(',', '.'))));
         }
 
-        //Ustaw dane z kolekcji, do wyświetlenia na liście
+        //Ustaw dane z kolekcji, do wyswietlenia na liscie
         stockItemList.setListData(listOfAssortments.toArray());
     }
 

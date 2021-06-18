@@ -12,19 +12,19 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * Klasa reprezentująca pojedynczego klienta. Każdy nowo połączony klient, to nowy obiekt klasy.
- * Odpowiada za nasłuchiwanie przychodzących komunikatów i odsyłanie komunikatów zwrotnych
+ * Klasa reprezentujaca pojedynczego klienta. Kazdy nowo polaczony klient, to nowy obiekt klasy.
+ * Odpowiada za nasluchiwanie przychodzacych komunikatow i odsylanie komunikatow zwrotnych
  */
 class ClientSession extends Thread {
     private final Socket clientCommunicatorSocket;
     private BufferedReader inputStream;
     private PrintWriter outputStream;
 
-    //Obiekt klasy 'Logger', pozwalający na wpisywanie logów do pliku
+    //Obiekt klasy 'Logger', pozwalajacy na wpisywanie logow do pliku
     public static Logger logger = new Logger();
 
     /**
-     * Konstruktor, inizjalizujący socket oraz strumienie wyjścia/wejścia
+     * Konstruktor, inizjalizujacy socket oraz strumienie wyjscia/wejscia
      */
     public ClientSession(Socket _socket) {
         clientCommunicatorSocket = _socket;
@@ -32,20 +32,20 @@ class ClientSession extends Thread {
             inputStream = new BufferedReader(new InputStreamReader(clientCommunicatorSocket.getInputStream()));
             outputStream = new PrintWriter(new OutputStreamWriter(clientCommunicatorSocket.getOutputStream()), true);
         } catch (Exception e) {
-            logger.WriteLog("Błąd podczas inizjalizacji połączenia z klientem -> " + e.getMessage(), "ERROR");
+            logger.WriteLog("Blad podczas inizjalizacji polaczenia z klientem -> " + e.getMessage(), "ERROR");
         }
     }
 
     /**
-     * Główna funckja wątku, odpowiedzialna za nasłuchiwanie i wywołanie odpowiednich metod, odpowiadających klientowi
+     * Glowna funckja watku, odpowiedzialna za nasluchiwanie i wywolanie odpowiednich metod, odpowiadajacych klientowi
      */
     public void run() {
         String jsonMessageFromClient;
         try {
             while ((jsonMessageFromClient = inputStream.readLine()) != null) {
 
-                //W przypadku 'heartbeat', czyli wątku sprawdzającego, czy socket komunikacyjny nie został zamknięty
-                //wtedy wysyłamny jest po prostu tekst, bez JSON'a
+                //W przypadku 'heartbeat', czyli watku sprawdzajacego, czy socket komunikacyjny nie zostal zamkniety
+                //wtedy wysylamny jest po prostu tekst, bez JSON'a
                 if (jsonMessageFromClient.equals("heartbeat")){
                     outputStream.println("pik-pik");
                     continue;
@@ -54,33 +54,33 @@ class ClientSession extends Thread {
                 //Serializacja JSON'a (tekstu), otrzymane od klienta, do formy obiektu
                 JSONObject jsonObject = new JSONObject(jsonMessageFromClient);
 
-                //Akcja mówi o tym, czego klient oczekuje od serwera
+                //Akcja mowi o tym, czego klient oczekuje od serwera
                 String actionPerformed = jsonObject.getString("action");
-                //Obsługa logowania
+                //Obsluga logowania
                 if (actionPerformed.equals("login")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(verifyLoginData(jsonObject));
                 } else if (actionPerformed.equals("create_user")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(addNewUser(jsonObject));
                 } else if (actionPerformed.equals("create_location")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(addNewLocation(jsonObject));
                 } else if (actionPerformed.equals("create_assortment")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(addNewAssortment(jsonObject));
                 } else if (actionPerformed.equals("get_stock_item")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(getStockItem(jsonObject));
                 } else if (actionPerformed.equals("do_output")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
-                    System.out.println("złapałem polecenie wydania");
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
+                    System.out.println("zlapalem polecenie wydania");
                     outputStream.println(doOutput(jsonObject));
                 } else if (actionPerformed.equals("create_contractor")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(addNewContractor(jsonObject));
                 } else if (actionPerformed.equals("input_operation")) {
-                    //Zwróć do klienta informację, zwróconą przez funkcję
+                    //Zwroć do klienta informacje, zwrocona przez funkcje
                     outputStream.println(doInput(jsonObject));
                 } else if (actionPerformed.equals("transfer_operation")) {
                     outputStream.println(doTransfer(jsonObject));
@@ -89,16 +89,16 @@ class ClientSession extends Thread {
             inputStream.close();
             clientCommunicatorSocket.close();
         } catch (Exception e) {
-            logger.WriteLog("Błąd podczas komunikacji z klientem -> " + e.getMessage(), "ERROR");
+            logger.WriteLog("Blad podczas komunikacji z klientem -> " + e.getMessage(), "ERROR");
         }
     }
 
     /**
-     * Funkcja weryfikuje dane logowania i odsyła 'ok', w przypadku poprawnych danych
+     * Funkcja weryfikuje dane logowania i odsyla 'ok', w przypadku poprawnych danych
      */
     private String verifyLoginData(JSONObject JSONMessage) {
 
-        //Dane logowania z przesłanego JSON'a
+        //Dane logowania z przeslanego JSON'a
         String login = JSONMessage.getJSONObject("data").getString("login");
         String password = JSONMessage.getJSONObject("data").getString("password");
 
@@ -109,47 +109,47 @@ class ClientSession extends Thread {
     }
 
     /**
-     * Funkcja wywułuje procedurę SQL-ową, która dodaje nowego użytkownika z podanych danych
-     * Jeśli napotka błąd w trakcie realizacji procedury, to go zwróci wraz ze statusem "error"
+     * Funkcja wywuluje procedure SQL-owa, ktora dodaje nowego uzytkownika z podanych danych
+     * Jesli napotka blad w trakcie realizacji procedury, to go zwroci wraz ze statusem "error"
      * Jesli wszystko ok, to status = success,
      */
     private JSONObject addNewUser(JSONObject JSONMessage) {
 
-        //Dane logowania z przesłanego JSON'a
+        //Dane logowania z przeslanego JSON'a
         String login = JSONMessage.getJSONObject("data").getString("login");
         String password = JSONMessage.getJSONObject("data").getString("password");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji dodajacej nowego uzytkownika (zwraca wyjatek, przy napotkaniu bledu)
         try {
             SQLHelper.AddNewUser(login, password);
             serwerResponseJson.put("status", "success");
-            serwerResponseJson.put("message", "Poprawnie utworzono użytkownika");
+            serwerResponseJson.put("message", "Poprawnie utworzono uzytkownika");
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcjaa wywoływana przy wykonywaniu wydania. Parsuje otrzymanego JSON'a, wywołuję funkcję z SQLHelpera i na
-     * podstawie jej rezultatów wysyła zwrotkę do klienta
+     * Funkcjaa wywolywana przy wykonywaniu wydania. Parsuje otrzymanego JSON'a, wywoluje funkcje z SQLHelpera i na
+     * podstawie jej rezultatow wysyla zwrotke do klienta
      */
     private JSONObject doInput(JSONObject JSONDataFromClient) {
 
-        //Wyciągnij obiorcę i nadawcę z JSONA
+        //Wyciagnij obiorce i nadawce z JSONA
         String getfrom = JSONDataFromClient.getString("from_Contractor");
 
-        //Przygotuj listę asortymentów, do przekazania funkcji w SQLHelperze
+        //Przygotuj liste asortymentow, do przekazania funkcji w SQLHelperze
         ArrayList<AssortmentEntity> listOfAssortments = new ArrayList<>();
 
         JSONArray assortmentsDataArray = JSONDataFromClient.getJSONArray("assortments_data");
@@ -164,63 +164,63 @@ class ClientSession extends Thread {
             listOfAssortments.add(tmpAssortmentEntity);
         }
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji pobierajacej stany magazynowe (zwraca wyjatek, przy napotkaniu bledu)
         try {
             String responseStockItemJSOnArray = SQLHelper.DoInput(getfrom, listOfAssortments);
             serwerResponseJson.put("status", "success");
-            serwerResponseJson.put("message", "Poprawnie zakończono przyjęcie");
+            serwerResponseJson.put("message", "Poprawnie zakonczono przyjecie");
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcjaa wywoływana przy wykonywaniu transferu. Parsuje otrzymanego JSON'a, wywołuję funkcję z SQLHelpera i na
-     * podstawie jej rezultatów wysyła zwrotkę do klienta
+     * Funkcjaa wywolywana przy wykonywaniu transferu. Parsuje otrzymanego JSON'a, wywoluje funkcje z SQLHelpera i na
+     * podstawie jej rezultatow wysyla zwrotke do klienta
      */
     private JSONObject doTransfer(JSONObject JSONDataFromClient) {
 
-        //Wyciągnij obiorcę i nadawcę z JSONA
+        //Wyciagnij obiorce i nadawce z JSONA
         String fromLocation = JSONDataFromClient.getString("from_location");
         String assortmentName = JSONDataFromClient.getString("Asortment");
         String toLocation = JSONDataFromClient.getString("to_location");
         float assortmentQuantity = JSONDataFromClient.getFloat("AssortmentQuantity");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji pobierajacej stany magazynowe (zwraca wyjatek, przy napotkaniu bledu)
         try {
             String responseStockItemJSOnArray = SQLHelper.DoTransfer(fromLocation, toLocation, assortmentName, assortmentQuantity);
             serwerResponseJson.put("status", "success");
-            serwerResponseJson.put("message", "Poprawnie zakończono przyjęcie");
+            serwerResponseJson.put("message", "Poprawnie zakonczono przyjecie");
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcja wywułuje procedurę SQL-ową, która dodaje nową lokalizację z podanych danych
-     * Jeśli napotka błąd w trakcie realizacji procedury, to go zwróci wraz ze statusem "error"
+     * Funkcja wywuluje procedure SQL-owa, ktora dodaje nowa lokalizacje z podanych danych
+     * Jesli napotka blad w trakcie realizacji procedury, to go zwroci wraz ze statusem "error"
      * Jesli wszystko ok, to status = success,
      */
     private JSONObject addNewLocation(JSONObject JSONMessage) {
@@ -228,30 +228,30 @@ class ClientSession extends Thread {
         //nazwa nowej lokalizacji
         String locationName = JSONMessage.getJSONObject("data").getString("location_name");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji dodajacej nowego uzytkownika (zwraca wyjatek, przy napotkaniu bledu)
         try {
             SQLHelper.AddNewLocation(locationName);
             serwerResponseJson.put("status", "success");
-            serwerResponseJson.put("message", "Poprawnie utworzono lokalizację");
+            serwerResponseJson.put("message", "Poprawnie utworzono lokalizacje");
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcja wywułuje procedurę SQL-ową, która dodaje nowego asortymentu z podanych danych
-     * Jeśli napotka błąd w trakcie realizacji procedury, to go zwróci wraz ze statusem "error"
+     * Funkcja wywuluje procedure SQL-owa, ktora dodaje nowego asortymentu z podanych danych
+     * Jesli napotka blad w trakcie realizacji procedury, to go zwroci wraz ze statusem "error"
      * Jesli wszystko ok, to status = success,
      */
     private JSONObject addNewAssortment(JSONObject JSONMessage) {
@@ -259,10 +259,10 @@ class ClientSession extends Thread {
         //nazwa nowej lokalizacji
         String assortmentName = JSONMessage.getJSONObject("data").getString("assortment_name");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji dodajacej nowego uzytkownika (zwraca wyjatek, przy napotkaniu bledu)
         try {
             SQLHelper.AddNewAssortment(assortmentName);
             serwerResponseJson.put("status", "success");
@@ -270,19 +270,19 @@ class ClientSession extends Thread {
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcja wyciąga z bazy wszystkie asortymenty o podanych parametrach
-     * Jeśli napotka błąd w trakcie realizacji procedury, to go zwróci wraz ze statusem "error"
+     * Funkcja wyciaga z bazy wszystkie asortymenty o podanych parametrach
+     * Jesli napotka blad w trakcie realizacji procedury, to go zwroci wraz ze statusem "error"
      * Jesli wszystko ok, to status = success,
      */
     private JSONObject getStockItem(JSONObject JSONMessage) {
@@ -290,13 +290,13 @@ class ClientSession extends Thread {
         //nazwa szukanego asortymentu
         String assortmentName = JSONMessage.getJSONObject("filters").getString("assortment_name");
 
-        //nazwa lukalizacji, w której jest szuane
+        //nazwa lukalizacji, w ktorej jest szuane
         String locationName = JSONMessage.getJSONObject("filters").getString("location_name");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji pobierającej stany magazynowe (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji pobierajacej stany magazynowe (zwraca wyjatek, przy napotkaniu bledu)
         try {
             String responseStockItemJSOnArray = SQLHelper.GetStockItem(assortmentName, locationName);
             serwerResponseJson.put("status", "success");
@@ -305,11 +305,11 @@ class ClientSession extends Thread {
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
@@ -317,17 +317,17 @@ class ClientSession extends Thread {
     }
 
     /**
-     * Funckja parsuje dane z asortymentami, które przekaał jej klient i wywołuje procedurę SQL
+     * Funckja parsuje dane z asortymentami, ktore przekaal jej klient i wywoluje procedure SQL
      */
     private JSONObject addNewContractor(JSONObject JSONMessage) {
 
         //nazwa nowej lokalizacji
         String contractorName = JSONMessage.getJSONObject("data").getString("contractor_name");
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji dodającej nowego użytkownika (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji dodajacej nowego uzytkownika (zwraca wyjatek, przy napotkaniu bledu)
         try {
             SQLHelper.AddNewContractor(contractorName);
             serwerResponseJson.put("status", "success");
@@ -335,26 +335,26 @@ class ClientSession extends Thread {
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funckja wyciąga dane z JSON'a i wywołuję procedure z SQL Helpera
+     * Funckja wyciaga dane z JSON'a i wywoluje procedure z SQL Helpera
      */
     private JSONObject doOutput(JSONObject JSONDataFromClient) {
 
-        //Wyciągnij obiorcę i nadawcę z JSONA
+        //Wyciagnij obiorce i nadawce z JSONA
         String sendFrom = JSONDataFromClient.getJSONObject("data").getString("from");
         String sendTo = JSONDataFromClient.getJSONObject("data").getString("to");
 
-        //Przygotuj listę asortymentów, do przekazania funkcji w SQLHelperze
+        //Przygotuj liste asortymentow, do przekazania funkcji w SQLHelperze
         ArrayList<AssortmentEntity> listOfAssortments = new ArrayList<>();
 
         JSONArray assortmentsDataArray = JSONDataFromClient.getJSONObject("data").getJSONArray("assortments_data");
@@ -369,40 +369,40 @@ class ClientSession extends Thread {
             listOfAssortments.add(tmpAssortmentEntity);
         }
 
-        //Utwórz JSON'a zwrotnego
+        //Utworz JSON'a zwrotnego
         JSONObject serwerResponseJson = new JSONObject();
 
-        //Wywołanie funkcji wykonującej wydanie (zwraca wyjątek, przy napotkaniu błędu)
+        //Wywolanie funkcji wykonujacej wydanie (zwraca wyjatek, przy napotkaniu bledu)
         try {
             SQLHelper.DoOutput(sendFrom, sendTo, listOfAssortments);
             serwerResponseJson.put("status", "success");
-            serwerResponseJson.put("message", "Poprawnie zakończono wydanie");
+            serwerResponseJson.put("message", "Poprawnie zakonczono wydanie");
 
             createWZOutputFile(JSONDataFromClient);
         } catch (SQLException sqlException) {
             serwerResponseJson.put("status", "error");
 
-            //Kod 4500, to obsłużony w funkcji, więc wyświetl go użytkownikowi
+            //Kod 4500, to obsluzony w funkcji, wiec wyswietl go uzytkownikowi
             if (sqlException.getSQLState().equals("45000")) {
                 serwerResponseJson.put("message", sqlException.getMessage());
             } else {
-                serwerResponseJson.put("message", "Nieoczekiwany błąd");
+                serwerResponseJson.put("message", "Nieoczekiwany blad");
             }
         }
         return serwerResponseJson;
     }
 
     /**
-     * Funkcja wywoływana przy poprawnym zakończeniu wydania.
+     * Funkcja wywolywana przy poprawnym zakonczeniu wydania.
      * Tworzy dokument WZ, dla ERP'a
      */
     private void createWZOutputFile(JSONObject jsonString) {
 
-        //Formatowanie daty, żeby doklejać ja do pliku
+        //Formatowanie daty, zeby doklejać ja do pliku
         SimpleDateFormat dateFormater = new SimpleDateFormat("dd_MM_yyyy__HH_mm_ss");
         String WZFileName = dateFormater.format(new Date());
 
-        //Edycja JSON'a, do pliku wyjściowego
+        //Edycja JSON'a, do pliku wyjsciowego
         jsonString.remove("action");
         jsonString.put("document_type", "WZ");
         jsonString.put("document_numer", WZFileName);
@@ -412,7 +412,7 @@ class ClientSession extends Thread {
         jsonString.getJSONObject("data").remove("to");
         jsonString.getJSONObject("data").remove("from");
 
-        //Scieżka do pliku
+        //Sciezka do pliku
         String path = "output_WZ/WZ_" + WZFileName + ".json";
         createFileIfNotExists(path);
 
@@ -423,9 +423,9 @@ class ClientSession extends Thread {
         } catch(FileNotFoundException notFoundException) {
             System.out.println("Brak pliku o podanej nazwie");
         } catch (IOException ioException) {
-            System.out.println("Błąd czytania z pliku");
+            System.out.println("Blad czytania z pliku");
         } catch (Exception exception) {
-            System.out.println("Nieobsłużony błąd");
+            System.out.println("Nieobsluzony blad");
         }
     }
 
@@ -444,7 +444,7 @@ class ClientSession extends Thread {
                 writer.close();
             }
         } catch (IOException e) {
-           logger.WriteLog("Błąd tworzenia pliku ( " + path + ") -> " + e.getMessage(), "ERROR");
+           logger.WriteLog("Blad tworzenia pliku ( " + path + ") -> " + e.getMessage(), "ERROR");
         }
     }
 }

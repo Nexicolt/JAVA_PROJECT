@@ -4,18 +4,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- * Główna klasa serwera, odpowiedzialna za uruchomienie instancji serwerowej i tworzenie nowych instancji połączeń z klientami (socketów)
+ * Glowna klasa serwera, odpowiedzialna za uruchomienie instancji serwerowej i tworzenie nowych instancji polaczen z klientami (socketow)
  */
 public class Server {
 
     public static int port = 14432;
     ServerSocket communicationSocket;
 
-    //Obiekt klasy 'Logger', pozwalający na wpisywanie logów do pliku
+    //Obiekt klasy 'Logger', pozwalajacy na wpisywanie logow do pliku
     private static Logger logger = new Logger();
 
     /**
-     * Konstruktor inicjalizujący socket komunikacyjny
+     * Konstruktor inicjalizujacy socket komunikacyjny
      */
     public Server() {
         try{
@@ -24,13 +24,13 @@ public class Server {
             SQLHelper.InitSqlConnection();
             logger.WriteLog("Poprawnie uruchomiono serwer", "DEBUG");
         }catch (Exception exception){
-            logger.WriteLog("Błąd podczas urchamiania serwera  -> " + exception.getMessage(), "ERROR");
+            logger.WriteLog("Blad podczas urchamiania serwera  -> " + exception.getMessage(), "ERROR");
             System.exit(1);
         }
     }
 
     /**
-     * Funkcja uruchamia serwer i nasłuchuje komunikatów
+     * Funkcja uruchamia serwer i nasluchuje komunikatow
      */
     void StartSever() throws Exception {
         while(true) {
@@ -40,7 +40,7 @@ public class Server {
     }
 
     /**
-     * Główna funkcja serwera, to ona uruchamia cały serwer
+     * Glowna funkcja serwera, to ona uruchamia caly serwer
      */
     public static void main(String[] args) {
         Server server = new Server();
@@ -48,7 +48,7 @@ public class Server {
             server.StartSever();
             server.communicationSocket.close();
         } catch (Exception exception) {
-            logger.WriteLog("Błąd podczas uruchamiania serwera -> " + exception.getMessage(), "ERROR");
+            logger.WriteLog("Blad podczas uruchamiania serwera -> " + exception.getMessage(), "ERROR");
             System.exit(1);
         }
 

@@ -13,8 +13,8 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 /**
- * Klasa reperezntuje główno okno aplikacji, po poprawnym zalogowaniu. To ona wywołuje JPanela, stanowiące osobne funkcjonalności.
- * Jest swego rodzaju kontenrem całego GUI
+ * Klasa reperezntuje glowno okno aplikacji, po poprawnym zalogowaniu. To ona wywoluje JPanela, stanowiace osobne funkcjonalnosci.
+ * Jest swego rodzaju kontenrem calego GUI
  */
 public class MainWindowWMS extends AbstractJFrame implements ActionListener, ComponentListener {
 
@@ -32,7 +32,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
     }
 
     /**
-     *     Funkcja wywolania widoku menu głównego aplikacji
+     *     Funkcja wywolania widoku menu glownego aplikacji
      */
     public void init(){
         setSize(1100,550);
@@ -40,7 +40,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        //Panel Górny zawierajacy nazwe zalogowanego uzytkownika oraz przycisk wyloguj
+        //Panel Gorny zawierajacy nazwe zalogowanego uzytkownika oraz przycisk wyloguj
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new FlowLayout());
         JLabel zalogowanyUzytkownika = new JLabel("Zalogowano: "+userName);
@@ -69,7 +69,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
         mainWindowPanel.add(transferButton);
 
         //Przyjecia Button
-        inputDocumentButton = new JButtonMainStyle("Przyjęcia");
+        inputDocumentButton = new JButtonMainStyle("Przyjecia");
         inputDocumentButton.addActionListener(this);
         mainWindowPanel.add(inputDocumentButton);
 
@@ -128,7 +128,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
             dispose();
         }
 
-        //Pakowanie zawartości frame i środkowanie na ekranie
+        //Pakowanie zawartosci frame i srodkowanie na ekranie
         setLocationRelativeTo(null);
     }
 
@@ -140,7 +140,7 @@ public class MainWindowWMS extends AbstractJFrame implements ActionListener, Com
 
     /**
      * Funkcja centruje okno aplikacji bo jej uwidocznieniu. Konieczne do immplementacji, bo poprawna realizacja procedu magazynowego,
-     * pwooduje ponowne uwidocznienie frame'a, po tym jak został on schowany po kliknięciu w określoną funkcjnalność
+     * pwooduje ponowne uwidocznienie frame'a, po tym jak zostal on schowany po kliknieciu w okreslona funkcjnalnosć
      */
     @Override
     public void componentShown(ComponentEvent e) {
